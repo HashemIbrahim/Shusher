@@ -1,25 +1,18 @@
 #include "Ultrasonic.h"
-#include"TFT_eSPI.h"
-#include "MQTT.h"
+#include "TFT_eSPI.h"
+TFT_eSPI tft;
 
 Ultrasonic ultrasonic(0);
-TFT_eSPI tft = TFT_eSPI();
-MQTTClient client = MQTTClient();
-
 void setup()
 {
  Serial.begin(9600);
- //Color and Text Settings before run
- tft.setTextColor(TFT_WHITE);
- tft.setTextSize(2);
 }
 void loop()
 {
  long RangeInCentimeters;
- //Ultrasonic method that measures distance in centimeters
+//Measues distance in CM with short delay to ensure fast and accurate measurements
  RangeInCentimeters = ultrasonic.MeasureInCentimeters();
- //Centers text in screen
- tft.setCursor((320 - tft.textWidth(RangeInCentimeters + " cm")) / 2, 120);
- tft.println(RangeInCentimeters + " cm");
- delay(200);
+ Serial.print(RangeInCentimeters);//0~400cm
+ Serial.println(" cm");
+ delay(100);
 }
