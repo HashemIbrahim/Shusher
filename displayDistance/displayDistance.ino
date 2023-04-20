@@ -8,6 +8,15 @@ Ultrasonic ultrasonic(0);
 void setup()
 {
  //displayDistance =============================================================================================================================
+ tft.begin();
+ tft.fillScreen(TFT_BLACK);
+ tft.setRotation(3);
+ tft.setTextSize(5);
+ tft.setCursor((320 - tft.textWidth("Shusher")) / 2, 110);
+ tft.print("Shusher");
+ delay(1000);
+ tft.fillScreen(TFT_BLACK);
+
  Serial.begin(9600);
  //=============================================================================================================================================
 }
@@ -22,9 +31,15 @@ rangeFinder();
 void rangeFinder(){
  long RangeInCentimeters;
  //Measues distance in CM with short delay to ensure fast and accurate measurements
- RangeInCentimeters = ultrasonic.MeasureInCentimeters();
+ RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
  Serial.print(RangeInCentimeters);//0~400cm
  Serial.println(" cm");
- //Short delay to ensure quick refreshes of data measurements
+
+ tft.setCursor(0, 0);
+ tft.setTextSize(2);
+ tft.drawNumber(RangeInCentimeters, 0, 0);
+ tft.drawString("cm", 38, 0);
  delay(100);
+ //Short delay to ensure quick refreshes of data measurements
+
 }
