@@ -9,12 +9,17 @@ void setup()
 {
  //displayDistance =============================================================================================================================
  Serial.begin(9600);
- ===============================================================================================================================================
+ //=============================================================================================================================================
 }
 void loop()
 {
+rangeFinder();
+}
 
- //diplayDistance ==============================================================================================================================
+//Functions
+
+//Ultrasonic Range Finder Sensor
+void rangeFinder(){
  long RangeInCentimeters;
  //Measues distance in CM with short delay to ensure fast and accurate measurements
  RangeInCentimeters = ultrasonic.MeasureInCentimeters();
@@ -22,5 +27,4 @@ void loop()
  Serial.println(" cm");
  //Short delay to ensure quick refreshes of data measurements
  delay(100);
- ===============================================================================================================================================
 }
