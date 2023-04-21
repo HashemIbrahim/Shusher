@@ -32,14 +32,14 @@ void rangeFinder(){
  long RangeInCentimeters;
  //Measues distance in CM with short delay to ensure fast and accurate measurements
  RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
- Serial.print(RangeInCentimeters);//0~400cm
+ Serial.print(Rangecd SEMREPInCentimeters);//0~400cm
  Serial.println(" cm");
 
  tft.setCursor(0, 0);
  tft.setTextSize(2);
  tft.drawNumber(RangeInCentimeters, 0, 0);
  tft.drawString("cm", 38, 0);
- delay(100);
  //Short delay to ensure quick refreshes of data measurements
+ delay(100);
 
 }
