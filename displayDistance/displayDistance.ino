@@ -10,15 +10,10 @@ TFT_eSprite spr = TFT_eSprite(&tft);
 void setup()
 {
  //displayDistance =============================================================================================================================
+  //tft setup
  tft.begin();
  tft.fillScreen(TFT_BLACK);
  tft.setRotation(3);
- tft.setTextSize(5);
- tft.setCursor((320 - tft.textWidth("Shusher")) / 2, 110);
- tft.print("Shusher");
- delay(1000);
- tft.fillScreen(TFT_BLACK);
-
 
  Serial.begin(9600);
  //=============================================================================================================================================
