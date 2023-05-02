@@ -2,8 +2,9 @@ int val;
 const int sampleWindow = 50;
 int sample;
 int loudness;
-int baseThreshold = 49;
-int Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+5,baseThreshold+6,baseThreshold+8,baseThreshold+10,baseThreshold+12,baseThreshold+18,baseThreshold+26};
+int loudnessMaxReachedCount;
+int constexpr baseThreshold = 49;
+int constexpr Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+5,baseThreshold+6,baseThreshold+8,baseThreshold+10,baseThreshold+12,baseThreshold+18,baseThreshold+26};
 
 
 // RGB LED Stick-------------------------------------------------------
@@ -13,7 +14,6 @@ int Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
 //----------------------------------------------------------------------
 
-String message;
 
 void setup() {
   // put your setup code here, to run once:
@@ -33,17 +33,9 @@ setLedStick();
 //Functions
 
 //Loudness Sensor Thresholds
-String Messagecalculator() {
-if (loudness >= 1 && loudness <= 2) {
-message = "Quiet";
-}   else if (loudness > 2 && loudness <8) {
-message = "Reasonable";  
-} else { message = "Loud";}
-return message;
-}  
 
-  int LoudnessSensorLoudValue() {
-    //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ 
+  void LoudnessSensorLoudValue() {
+    //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
     unsigned long startMillis= millis();                   // Start of sample window
    float peakToPeak = 0;                                  // peak-to-peak level
  
@@ -68,11 +60,12 @@ return message;
    }
  
    peakToPeak = signalMax - signalMin;                    // max - min = peak-peak amplitude
-   int val = map(peakToPeak,20,900,49.5,90);
+   int val = map(peakToPeak,20,900,49.5,90);              // maps the value to a decibel
 	/////
 
 
-  Serial.println(val);
+
+// based on the decibel a loudness value is assigned
   if (val <= Thresholds[0]) {
   (loudness = 1);
   }
@@ -101,9 +94,11 @@ return message;
    (loudness = 9);
   }  
    else if (val >  Thresholds[8] ) {
-   (loudness = 10);
+   loudness = 10;
+   loudnessMaxReachedCount++; // adds one to a count of how many times the max threshold was reached
+   
   }
-return loudness;  
+ 
   }
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
