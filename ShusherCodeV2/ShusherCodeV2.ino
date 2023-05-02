@@ -5,12 +5,19 @@
 TFT_eSPI tft;
 Ultrasonic ultrasonic(0);
 TFT_eSprite spr = TFT_eSprite(&tft);
+long RangeInCentimeters;
 
 // RGB LED Stick Initialization-----------------------------------------
 #include <Adafruit_NeoPixel.h>
 #define NUM_LEDS 10
 #define DATA_PIN 0
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
+//----------------------------------------------------------------------
+
+// Loudness Sensor Initialization---------------------------------------
+int val;
+int Thresholds[] = {20,40,60,80,100,120,140,160,180,200};
+int loudness;
 //----------------------------------------------------------------------
 
 void setup()
@@ -22,76 +29,52 @@ void setup()
  tft.setRotation(3);
 
  Serial.begin(9600);
- ledStartupTest();
+ //ledStartupTest();
  //=============================================================================================================================================
 }
 void loop()
 {
 rangeFinder();
-loudnessSensor();
-LoudnessSensorLoudValue();
-Messagecalculator();
-Serial.println(message);
-setLedStick();
+setLedStick(loudness);
+displayData();
 delay(100);
 }
 
 //Functions
 
+//TFT_eSPI Data Display Function
+void displayData(){
+ tft.setCursor(0, 0);
+ tft.setTextSize(2);
+ spr.fillSprite(TFT_WHITE);
+    spr.createSprite(320, 240);
+    spr.fillSprite(TFT_WHITE);
+    spr.setTextColor(TFT_BLACK, TFT_WHITE);
+    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
+    //Ultrasonic Rangefinder Data-------------------
+    spr.drawNumber(RangeInCentimeters, 0, 0);
+    spr.drawString(" cm", 50, 0);
+    //Loudness Sensor Data--------------------------
+    spr.drawString("Volume: ", 0, 210);
+    spr.drawNumber(loudness, 100, 210);
+    //----------------------------------------------
+    spr.pushSprite(0, 0); 
+    spr.deleteSprite();
+}
+
 //Ultrasonic Range Finder Sensor
 void rangeFinder(){
- long RangeInCentimeters;
  //Measues distance in CM with short delay to ensure fast and accurate measurements
  RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
  Serial.print(RangeInCentimeters);//0~400cm
  Serial.println(" cm");
-
- //Visual Displaying of Data
- tft.setCursor(0, 0);
- tft.setTextSize(2);
- spr.fillSprite(TFT_WHITE);
-    spr.createSprite(100, 40);
-    spr.fillSprite(TFT_WHITE);
-    spr.setTextColor(TFT_BLACK, TFT_WHITE);
-    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
-    spr.drawNumber(RangeInCentimeters, 0, 0);
-    spr.drawString(" cm", 50, 0);
-    spr.pushSprite(0, 0); 
-    spr.deleteSprite();
- //Short delay to ensure quick refreshes of data measurements
 }
 
-//Loudness Sensor
-void loudnessSensor() {
-  loudnessVal = analogRead(1);
-
-  //Visual Displaying of Data
-  tft.setCursor(1,0);
-  spr.fillSprite(TFT_WHITE);
-  spr.createSprite(320,240);
-  spr.fillSprite(TFT_WHITE);
-  spr.setTextColor(TFT_BLACK,TFT_WHITE);
-  spr.setFreeFont(&FreeSansBoldOblique12pt7b);
-  spr.drawString("Volume: ",0,0);
-  spr.drawNumber(loudnessVal,70,0);
-  spr.pushSprite(0,0);
-  spr.deleteSprite();
-}
-
-//Loudness Sensor Thresholds
-String Messagecalculator() {
-if (loudness >= 1 && loudness <= 2) {
-message = "Quiet";
-}   else if (loudness > 2 && loudness <8) {
-message = "Reasonable";  
-} else { message = "Loud";}
-return message;
-}  
-
-  int LoudnessSensorLoudValue() {
-   analogRead(0);
+//Loudness Sensor Value Calculation and Visual Functionality
+void LoudnessSensorValue() {
+  analogRead(0);
 	delay(10);
-
+  
 	val = analogRead(0);
   if (val <= Thresholds[0]) {
   (loudness = 1);
@@ -122,9 +105,10 @@ return message;
   }  
    else if (val >  Thresholds[8] ) {
    (loudness = 10);
+
   }
-return loudness;  
   }
+
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.begin();
@@ -163,7 +147,7 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
 }
 
 
-void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
+void setLedStick(int loudness){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
   
   if(loudness >= 1){
     strip.setPixelColor(0, 255,0,0);

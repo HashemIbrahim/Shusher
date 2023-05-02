@@ -37,7 +37,7 @@ void rangeFinder(){
  tft.setTextSize(2);
 
  spr.fillSprite(TFT_WHITE);
-    spr.createSprite(100, 40);
+    spr.createSprite(320, 240);
     spr.fillSprite(TFT_WHITE);
     spr.setTextColor(TFT_BLACK, TFT_WHITE);
     spr.setFreeFont(&FreeSansBoldOblique12pt7b);
