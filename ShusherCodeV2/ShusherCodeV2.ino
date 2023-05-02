@@ -3,7 +3,7 @@
 #include "TFT_eSPI.h"
 #define LOOP_PERIOD 100
 TFT_eSPI tft;
-Ultrasonic ultrasonic(0);
+Ultrasonic ultrasonic(1);
 TFT_eSprite spr = TFT_eSprite(&tft);
 long RangeInCentimeters;
 
@@ -20,6 +20,8 @@ int Thresholds[] = {20,40,60,80,100,120,140,160,180,200};
 int loudness;
 //----------------------------------------------------------------------
 
+
+
 void setup()
 {
  //displayDistance =============================================================================================================================
@@ -27,6 +29,7 @@ void setup()
  tft.begin();
  tft.fillScreen(TFT_BLACK);
  tft.setRotation(3);
+ pinMode(WIO_MIC, INPUT);
 
  Serial.begin(9600);
  //ledStartupTest();
@@ -75,7 +78,7 @@ void LoudnessSensorValue() {
   analogRead(0);
 	delay(10);
   
-	val = analogRead(0);
+	val = analogRead(WIO_MIC);
   if (val <= Thresholds[0]) {
   (loudness = 1);
   }
@@ -175,7 +178,7 @@ void setLedStick(int loudness){                 //Activating the LEDs dependent 
   }
   if(loudness >= 9){
     strip.setPixelColor(8, 0,255,0);
-  }
+}
   
    
     while(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red

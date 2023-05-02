@@ -1,6 +1,7 @@
 int val;
 int loudness;
-int Thresholds[] = {20,40,60,80,100,120,140,160,180,200};
+int baseThreshold = 300;
+int Thresholds[] = {baseThreshold,baseThreshold+60,baseThreshold+120,baseThreshold+180,baseThreshold+240,baseThreshold+300,baseThreshold+360,baseThreshold+420,baseThreshold+480,baseThreshold+540};
 
 
 // RGB LED Stick-------------------------------------------------------
@@ -16,6 +17,7 @@ void setup() {
   // put your setup code here, to run once:
  Serial.begin(9600);
  ledStartupTest();
+ pinMode(WIO_MIC, INPUT);
 }
 
 void loop() {
@@ -24,8 +26,8 @@ LoudnessSensorLoudValue();
 Messagecalculator();
 Serial.println(message);
 setLedStick();
+Serial.println(val);
 
-	delay(200);
 
 }
 //Functions
@@ -41,10 +43,10 @@ return message;
 }  
 
   int LoudnessSensorLoudValue() {
-   analogRead(0);
-	delay(10);
+   
+	
 
-	val = analogRead(0);
+	val = analogRead(WIO_MIC);
   if (val <= Thresholds[0]) {
   (loudness = 1);
   }
@@ -95,7 +97,7 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
     else if(i<10) {
     strip.setPixelColor(i,0,255,0);       //Setting the color of LED number 8-9 red
   }
-    else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
+   /* else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
        for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
           strip.setPixelColor(k, 0, 255, 0);
@@ -111,7 +113,9 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
     strip.show();
   }
   strip.clear();
+  */
 
+}
 }
 
 
@@ -145,8 +149,7 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
     strip.setPixelColor(8, 0,255,0);
   }
   
-   
-    while(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red
+   if(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red
      for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
           strip.setPixelColor(k, 0, 255, 0);
@@ -160,6 +163,7 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
     }
   
   strip.show();
+  strip.clear();
   } 
 
 
