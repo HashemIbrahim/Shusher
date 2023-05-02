@@ -5,7 +5,7 @@ import org.eclipse.paho.client.mqttv3.*;        //mqtt library
 public class MyMqttClient {
 
     public final MqttClient mqttClient;
-    private static final String TOPIC = "shusher";
+    private String topic;
 
     public MyMqttClient(String broker, String clientID) throws MqttException{
         this.mqttClient = new MqttClient(broker, clientID);
@@ -21,15 +21,20 @@ public class MyMqttClient {
         mqttClient.disconnect();
     }
 
-    public void sendMessage(String payload) throws MqttException {
+    // publish function, takes topic and message as argument. Publishes a payload that is converted to a byte array
+    public void publish(String topic, String payload) throws MqttException {
         MqttMessage message = new MqttMessage(payload.getBytes());
-        mqttClient.publish(TOPIC, message);
+        mqttClient.publish(topic, message);
     }
 
-    public void subscribe() throws MqttException {
-        mqttClient.subscribe(TOPIC, (topic, message) -> {
-            System.out.println(new String(message.getPayload()));
-        });
+    // subscribe function, takes topic as argument
+    public void subscribe(String topic) throws MqttException {
+        mqttClient.subscribe(topic);
+    }
+
+    //callback function, used to perform actions whenever a new message arrives
+    public void setCallback(MqttCallback callback) {
+        mqttClient.setCallback(callback);
     }
 
 }
