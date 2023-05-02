@@ -1,7 +1,9 @@
 int val;
+const int sampleWindow = 50;
+int sample;
 int loudness;
-int baseThreshold = 300;
-int Thresholds[] = {baseThreshold,baseThreshold+60,baseThreshold+120,baseThreshold+180,baseThreshold+240,baseThreshold+300,baseThreshold+360,baseThreshold+420,baseThreshold+480,baseThreshold+540};
+int baseThreshold = 49;
+int Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+5,baseThreshold+6,baseThreshold+8,baseThreshold+10,baseThreshold+12,baseThreshold+18,baseThreshold+26};
 
 
 // RGB LED Stick-------------------------------------------------------
@@ -23,10 +25,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
 LoudnessSensorLoudValue();
-Messagecalculator();
-Serial.println(message);
 setLedStick();
-Serial.println(val);
+
 
 
 }
@@ -43,10 +43,36 @@ return message;
 }  
 
   int LoudnessSensorLoudValue() {
-   
-	
+    //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ 
+    unsigned long startMillis= millis();                   // Start of sample window
+   float peakToPeak = 0;                                  // peak-to-peak level
+ 
+   unsigned int signalMax = 0;                            //minimum value
+   unsigned int signalMin = 1024;                         //maximum value
+ 
+                                                          // collect data for 50 mS
+   while (millis() - startMillis < sampleWindow)
+   {
+      sample = analogRead(WIO_MIC);                    //get reading from microphone
+      if (sample < 1024)                                  // toss out spurious readings
+      {
+         if (sample > signalMax)
+         {
+            signalMax = sample;                           // save just the max levels
+         }
+         else if (sample < signalMin)
+         {
+            signalMin = sample;                           // save just the min levels
+         }
+      }
+   }
+ 
+   peakToPeak = signalMax - signalMin;                    // max - min = peak-peak amplitude
+   int val = map(peakToPeak,20,900,49.5,90);
+	/////
 
-	val = analogRead(WIO_MIC);
+
+  Serial.println(val);
   if (val <= Thresholds[0]) {
   (loudness = 1);
   }
