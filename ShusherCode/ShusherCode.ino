@@ -45,6 +45,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+Convertanalogue() 
 LoudnessSensorLoudValue();
 setLedStick();
 
@@ -56,8 +57,8 @@ if (!client.connected()) {
 //Functions
 
 //Loudness Sensor Thresholds
-
-  void LoudnessSensorLoudValue() {
+void Convertanalogue() {
+  
     //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
     unsigned long startMillis= millis();                   // Start of sample window
    float peakToPeak = 0;                                  // peak-to-peak level
@@ -83,13 +84,13 @@ if (!client.connected()) {
    }
  
    peakToPeak = signalMax - signalMin;                    // max - min = peak-peak amplitude
-   int val = map(peakToPeak,20,900,49.5,90);              // maps the value to a decibel
+   int val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
 	/////
-
-
+}
  // Serial.println(val);
 
 // based on the decibel a loudness value is assigned
+void LoudnessSensorLoudValue() {
   if (val <= Thresholds[0]) {
   (loudness = 1);
   client.publish("shusher/loudness", "1");
