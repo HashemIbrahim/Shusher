@@ -12,25 +12,23 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, MqttException {
-        // create an instance of MqttClient and use component via forwarding
-        MyMqttClient mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
+        // Create an instance of MqttClient and use component via forwarding
+        MyMqttClient mqttClient = new MyMqttClient("tcp://192.168.137.1:1883", "shusherApp");
         mqttClient.connect();
 
-        // load homepage from fxml file
+        // Load homepage from fxml file
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
         stage.setTitle("Shusher");
 
-        // create css string for to enable adding css file to scenes
-        String css = this.getClass().getResource("style.css").toExternalForm();
-        // add css to the scene
-        scene.getStylesheets().add(css);
+        // Add css file to the scene
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // pass MqttClient instance to homepageController
+        // Pass MqttClient instance to homepageController
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
-        // set the window and display scene
+        // Set the window and display scene
         stage.setScene(scene);
         stage.show();
     }

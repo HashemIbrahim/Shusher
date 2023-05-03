@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.*;
@@ -14,17 +15,17 @@ public class HomepageController {
     private Stage stage;
     private MyMqttClient mqttClient;
 
-    // variables used in SceneBuilder need to be annotated with @FXML
-    // assign fx:id to lights
+    // Variables used in SceneBuilder need to be annotated with @FXML
+    // Assign fx:id to lights
     @FXML
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
 
-    // setter for MqttClient
+    // Setter for MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
             this.mqttClient = mqttClient;
             System.out.println("Successfully passed mqtt instance to homepageController");
-            // run 'runMqtt' function
+            // Run 'runMqtt' function
             runMqtt();
         } else {
             System.out.println("ERROR: mqttClient object is null");
@@ -38,11 +39,15 @@ public class HomepageController {
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
 
-        // pass the MqttClient instance to the settings scene controller
+        // Add css file to the scene
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+
+        // Pass the MqttClient instance to the settings scene controller
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
 
-        // set the window and display scene
+        // Set the window and display scene
         stage.setScene(scene);
         stage.show();
     }
@@ -51,8 +56,10 @@ public class HomepageController {
         if (mqttClient != null) {
             try {
                 mqttClient.subscribe("shusher/loudness");
+                // Create a new thread using lambda expression. Handle incoming messages without blocking the main thread.
+                // The thread runs constantly in the background while the program is running.
                 new Thread(() -> {
-                    // set the callback function for arriving messages
+                    // Set the callback function for arriving messages.
                     mqttClient.setCallback(new MqttCallback() {
                         @Override
                         public void connectionLost(Throwable throwable) {
@@ -64,35 +71,35 @@ public class HomepageController {
                             int payload = Integer.parseInt(new String(mqttMessage.getPayload()));
                             if (topic.equals("shusher/loudness")) {
                                 Platform.runLater(() -> {
-                                    if (payload == 1) {
-                                        light1.setStyle("-fx-background-color: #AAFF00");
-                                    }
-                                    if (payload == 2) {
-                                        light2.setStyle("-fx-background-color: #AAFF00");
-                                    }
-                                    if (payload == 3) {
-                                        light3.setStyle("-fx-background-color: #AAFF00");
-                                    }
-                                    if (payload == 4) {
-                                        light4.setStyle("-fx-background-color: #FFEA00");
-                                    }
-                                    if (payload == 5) {
-                                        light5.setStyle("-fx-background-color: #FFEA00");
-                                    }
-                                    if (payload == 6) {
-                                        light6.setStyle("-fx-background-color: #FFEA00");
-                                    }
-                                    if (payload == 7) {
-                                        light7.setStyle("-fx-background-color: #FFEA00");
-                                    }
-                                    if (payload == 8) {
-                                        light8.setStyle("-fx-background-color: #EE4B2B");
-                                    }
-                                    if (payload == 9) {
-                                        light9.setStyle("-fx-background-color: #EE4B2B");
-                                    }
-                                    if (payload == 10) {
-                                        light10.setStyle("-fx-background-color: #EE4B2B");
+                                    // Reset the background color of all lights
+                                    light1.setStyle("-fx-background-color: #202020");
+                                    light2.setStyle("-fx-background-color: #202020");
+                                    light3.setStyle("-fx-background-color: #202020");
+                                    light4.setStyle("-fx-background-color: #202020");
+                                    light5.setStyle("-fx-background-color: #202020");
+                                    light6.setStyle("-fx-background-color: #202020");
+                                    light7.setStyle("-fx-background-color: #202020");
+                                    light8.setStyle("-fx-background-color: #202020");
+                                    light9.setStyle("-fx-background-color: #202020");
+                                    light10.setStyle("-fx-background-color: #202020");
+
+                                    // Set the background color of the lights that should light up on a given payload.
+                                    // ChatGPT helped me create this loop. I believe it is a good solution because:
+                                    // It uses get.Parent() to get the HBox object which enables the use of the lookup() method
+                                    // It efficiently uses the lookup() method to find nodes. It uses a loop to iterate over the number of lights that need to be turned on.
+                                    HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
+                                    for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
+                                        String lightId = "light" + i;
+                                        // Use lookup() method to find the node with the given lightId. The '#' is used to identify the elements id in CSS.
+                                        // When passing a string that start with '#' to lookup(), it will search for a node with the given id in the scene.
+                                        Node light = ledStrip.lookup("#" + lightId);
+                                        if (i <= 3) {                                           // Lights 1-3 are set to green
+                                            light.setStyle("-fx-background-color: #AAFF00");
+                                        } else if (i <= 7) {                                    // Lights 4-7 are set to yellow
+                                            light.setStyle("-fx-background-color: #FFEA00");
+                                        } else {                                                // Lights 8-10 are set to red
+                                            light.setStyle("-fx-background-color: #EE4B2B");
+                                        }
                                     }
                                 });
                             }
@@ -112,5 +119,6 @@ public class HomepageController {
             System.out.println("ERROR: mqttClient object is null");
         }
     }
+
 
 }

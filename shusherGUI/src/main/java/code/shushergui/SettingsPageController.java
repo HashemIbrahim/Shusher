@@ -13,7 +13,7 @@ public class SettingsPageController {
     private Stage stage;
     private MyMqttClient mqttClient;
 
-    // setter for MqttClient
+    // Setter for MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         this.mqttClient = mqttClient;
     }
@@ -23,11 +23,15 @@ public class SettingsPageController {
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
 
-        // pass the MqttClient instance to the homepage scene controller
+        // Add css file to the scene
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+
+
+        // Pass the MqttClient instance to the homepage scene controller
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
-        // set the window and display scene
+        // Set the window and display scene
         stage.setScene(scene);
         stage.show();
     }
