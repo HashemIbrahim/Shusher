@@ -87,12 +87,9 @@ if (!client.connected()) {
 	/////
 
 
-<<<<<<< HEAD
  // Serial.println(val);
-=======
 
 // based on the decibel a loudness value is assigned
->>>>>>> d2cdb9cfde46e5a85dfb5d1819be6a522c7d35c1
   if (val <= Thresholds[0]) {
   (loudness = 1);
   client.publish("shusher/loudness", "1");
@@ -130,14 +127,13 @@ if (!client.connected()) {
    client.publish("shusher/loudness", "9");
   }  
    else if (val >  Thresholds[8] ) {
-<<<<<<< HEAD
+
    (loudness = 10);
    client.publish("shusher/loudness", "10");
-=======
+
    loudness = 10;
    loudnessMaxReachedCount++; // adds one to a count of how many times the max threshold was reached
-   
->>>>>>> d2cdb9cfde46e5a85dfb5d1819be6a522c7d35c1
+  
   }
  
   }
