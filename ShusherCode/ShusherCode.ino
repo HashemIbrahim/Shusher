@@ -1,9 +1,21 @@
+//--MQTT--------------------------------------------------------------
+#include <rpcWiFi.h>
+#include <WiFi.h>
+#include <PubSubClient.h>
+const char* ssid = "Johans Dator";
+const char* password = "johan123";
+const char* server = "192.168.137.1";
+WiFiClient wioClient;
+PubSubClient client(wioClient);
+//---------------------------------------------------------------------
+
 int val;
 const int sampleWindow = 50;
 int sample;
 int loudness;
 int baseThreshold = 49;
 int Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+5,baseThreshold+6,baseThreshold+8,baseThreshold+10,baseThreshold+12,baseThreshold+18,baseThreshold+26};
+
 
 
 // RGB LED Stick-------------------------------------------------------
@@ -17,9 +29,18 @@ String message;
 
 void setup() {
   // put your setup code here, to run once:
+  //--MQTT------------
+  WiFi.begin(ssid, password);
+  client.setServer(server,1883);
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi not connected");
+    return;
+}
+  //-------------------
  Serial.begin(9600);
  ledStartupTest();
  pinMode(WIO_MIC, INPUT);
+ 
 }
 
 void loop() {
@@ -27,7 +48,9 @@ void loop() {
 LoudnessSensorLoudValue();
 setLedStick();
 
-
+if (!client.connected()) {
+    reconnect();
+  }
 
 }
 //Functions
@@ -72,43 +95,53 @@ return message;
 	/////
 
 
-  Serial.println(val);
+ // Serial.println(val);
   if (val <= Thresholds[0]) {
   (loudness = 1);
+  client.publish("shusher/loudness", "1");
   }
   else if (val > Thresholds[0] && val <=  Thresholds[1]) {
    (loudness = 2);
+   client.publish("shusher/loudness", "2");
   }
    else if (val >  Thresholds[1] && val <=  Thresholds[2]) {
    (loudness = 3);
+   client.publish("shusher/loudness", "3");
   }
    else if (val >  Thresholds[2] && val <=  Thresholds[3]) {
    (loudness = 4);
+   client.publish("shusher/loudness", "4");
   }
    else if (val >  Thresholds[3] && val <=  Thresholds[4]) {
    (loudness = 5);
+   client.publish("shusher/loudness", "5");
    }
  else if (val >  Thresholds[4] && val <=  Thresholds[5]) {
    (loudness = 6);
+   client.publish("shusher/loudness", "6");
   }   
    else if (val >  Thresholds[5] && val <=  Thresholds[6]) {
    (loudness = 7);
+   client.publish("shusher/loudness", "7");
   }
    else if (val >  Thresholds[6] && val <=  Thresholds[7]) {
    (loudness = 8);
+   client.publish("shusher/loudness", "8");
   }
  else if (val >  Thresholds[7] && val <=  Thresholds[8]) {
    (loudness = 9);
+   client.publish("shusher/loudness", "9");
   }  
    else if (val >  Thresholds[8] ) {
    (loudness = 10);
+   client.publish("shusher/loudness", "10");
   }
 return loudness;  
   }
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.begin();
-  strip.setBrightness(150);
+  strip.setBrightness(10);
   strip.clear(); 
   for(int i= 0; i<=NUM_LEDS;i++){
     delay(200);
@@ -123,7 +156,7 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
     else if(i<10) {
     strip.setPixelColor(i,0,255,0);       //Setting the color of LED number 8-9 red
   }
-   /* else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
+    else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
        for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
           strip.setPixelColor(k, 0, 255, 0);
@@ -139,10 +172,10 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
     strip.show();
   }
   strip.clear();
-  */
+  
 
 }
-}
+
 
 
 void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
@@ -191,6 +224,28 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
   strip.show();
   strip.clear();
   } 
+
+  void reconnect() {                                                  // method is taken fron the MQTT workshop
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.println("Attempting MQTT connection...");
+    // Create a random client ID
+    String clientId = "WioTerminal";
+    // Attempt to connect
+    if (client.connect(clientId.c_str())) {
+      Serial.println("connected");
+      // Once connected, publish an announcement...
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
