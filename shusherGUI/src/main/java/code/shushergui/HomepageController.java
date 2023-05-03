@@ -71,36 +71,11 @@ public class HomepageController {
                             int payload = Integer.parseInt(new String(mqttMessage.getPayload()));
                             if (topic.equals("shusher/loudness")) {
                                 Platform.runLater(() -> {
-                                    // Reset the background color of all lights
-                                    light1.setStyle("-fx-background-color: #202020");
-                                    light2.setStyle("-fx-background-color: #202020");
-                                    light3.setStyle("-fx-background-color: #202020");
-                                    light4.setStyle("-fx-background-color: #202020");
-                                    light5.setStyle("-fx-background-color: #202020");
-                                    light6.setStyle("-fx-background-color: #202020");
-                                    light7.setStyle("-fx-background-color: #202020");
-                                    light8.setStyle("-fx-background-color: #202020");
-                                    light9.setStyle("-fx-background-color: #202020");
-                                    light10.setStyle("-fx-background-color: #202020");
+                                    // Call function to reset the background color of all lights
+                                    resetLights();
+                                    // Call function to set color of lights depending on the payload
+                                    setLightsOnPayload(payload);
 
-                                    // Set the background color of the lights that should light up on a given payload.
-                                    // ChatGPT helped me create this loop. I believe it is a good solution because:
-                                    // It uses get.Parent() to get the HBox object which enables the use of the lookup() method
-                                    // It efficiently uses the lookup() method to find nodes. It uses a loop to iterate over the number of lights that need to be turned on.
-                                    HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
-                                    for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
-                                        String lightId = "light" + i;
-                                        // Use lookup() method to find the node with the given lightId. The '#' is used to identify the elements id in CSS.
-                                        // When passing a string that start with '#' to lookup(), it will search for a node with the given id in the scene.
-                                        Node light = ledStrip.lookup("#" + lightId);
-                                        if (i <= 3) {                                           // Lights 1-3 are set to green
-                                            light.setStyle("-fx-background-color: #AAFF00");
-                                        } else if (i <= 7) {                                    // Lights 4-7 are set to yellow
-                                            light.setStyle("-fx-background-color: #FFEA00");
-                                        } else {                                                // Lights 8-10 are set to red
-                                            light.setStyle("-fx-background-color: #EE4B2B");
-                                        }
-                                    }
                                 });
                             }
                         }
@@ -119,6 +94,39 @@ public class HomepageController {
             System.out.println("ERROR: mqttClient object is null");
         }
     }
+
+    // ChatGPT helped me create this loop. I believe it is a good solution because:
+    // - It uses get.Parent() to get the HBox object which enables the use of the lookup() method.
+    // - It efficiently uses the lookup() method to find nodes.
+    // - It is shorter than having 10 lines of setting the background color of all lights.
+    private void resetLights() {
+        HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
+        for (int i = 1; i <= 10; i++) {                             // Loop through lights
+            String lightId = "light" + i;
+            // Use lookup() method to find the node with the given lightId. The '#' is used to identify the elements id in CSS.
+            // When passing a string that start with '#' to lookup(), it will search for a node with the given id in the scene.
+            Node light = ledStrip.lookup("#" + lightId);
+            light.setStyle("-fx-background-color: #202020");
+        }
+
+
+    }
+    // Set the background color of the lights that should light up on a given payload.
+    public void setLightsOnPayload(int payload) {
+        HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
+        for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
+            String lightId = "light" + i;
+            Node light = ledStrip.lookup("#" + lightId);
+            if (i <= 3) {                                           // Lights 1-3 are set to green
+                light.setStyle("-fx-background-color: #AAFF00");
+            } else if (i <= 7) {                                    // Lights 4-7 are set to yellow
+                light.setStyle("-fx-background-color: #FFEA00");
+            } else {                                                // Lights 8-10 are set to red
+                light.setStyle("-fx-background-color: #EE4B2B");
+            }
+        }
+    }
+
 
 
 }
