@@ -13,7 +13,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException, MqttException {
         // Create an instance of MqttClient and use component via forwarding
-        MyMqttClient mqttClient = new MyMqttClient("tcp://192.168.137.1:1883", "shusherApp");
+        MyMqttClient mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
         mqttClient.connect();
 
         // Load homepage from fxml file
