@@ -2,20 +2,23 @@
 #include <rpcWiFi.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
-const char* ssid = "Johans Dator";
-const char* password = "johan123";
+//for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
+const char* ssid = "ISAACHP";
+const char* password = "isaac123";
 const char* server = "192.168.137.1";
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
-
+#define baseThreshold 49
+#define sampleWindow 10
+#define peakToPeakAverages 10
+#define DEBUG 
+const int brightnesslevellights = 20;
 int val;
-const int sampleWindow = 50;
 int sample;
 int loudness;
 int loudnessMaxReachedCount;
-int constexpr baseThreshold = 49;
-int constexpr Thresholds[] = {baseThreshold,baseThreshold+2,baseThreshold+4,baseThreshold+5,baseThreshold+6,baseThreshold+8,baseThreshold+10,baseThreshold+12,baseThreshold+18,baseThreshold+26};
+int constexpr Thresholds[] = {baseThreshold,baseThreshold+3,baseThreshold+6,baseThreshold+9,baseThreshold+12,baseThreshold+15,baseThreshold+18,baseThreshold+20,baseThreshold+22,baseThreshold+26};
 
 
 
@@ -37,7 +40,9 @@ void setup() {
     return;
 }
   //-------------------
- Serial.begin(9600);
+  #ifdef DEBUG
+ Serial.begin(115200);
+ #endif
  ledStartupTest();
  pinMode(WIO_MIC, INPUT);
  
@@ -45,10 +50,9 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-Convertanalogue() 
 LoudnessSensorLoudValue();
 setLedStick();
-
+// this is a known issue where it has to connect to even display data
 if (!client.connected()) {
     reconnect();
   }
@@ -57,40 +61,48 @@ if (!client.connected()) {
 //Functions
 
 //Loudness Sensor Thresholds
-void Convertanalogue() {
+void LoudnessSensorLoudValue() {
   
     //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
-    unsigned long startMillis= millis();                   // Start of sample window
+  
    float peakToPeak = 0;                                  // peak-to-peak level
  
    unsigned int signalMax = 0;                            //minimum value
-   unsigned int signalMin = 1024;                         //maximum value
+   unsigned int signalMin = 1024;                         //maximum value because its 10 bit
  
                                                           // collect data for 50 mS
-   while (millis() - startMillis < sampleWindow)
-   {
-      sample = analogRead(WIO_MIC);                    //get reading from microphone
-      if (sample < 1024)                                  // toss out spurious readings
-      {
-         if (sample > signalMax)
-         {
-            signalMax = sample;                           // save just the max levels
-         }
-         else if (sample < signalMin)
-         {
-            signalMin = sample;                           // save just the min levels
-         }
-      }
+  unsigned long startMillis = 0;                   // Start of sample window
+  for(unsigned int i = 0; i <peakToPeakAverages ; i++){
+    startMillis = millis(); 
+    while (millis() - startMillis < sampleWindow)
+    {
+        sample = analogRead(WIO_MIC);                    //get reading from microphone
+        Serial.print("0, ");                             // debugging printing
+        Serial.println(sample);
+        delay(1);
+        if (sample < 1024)                                  // toss out spurious readings
+        {
+          if (sample > signalMax)
+          {
+              signalMax = sample;                           // save just the max levels
+          }
+          else if (sample < signalMin)
+          {
+              signalMin = sample;                           // save just the min levels
+          }
+        }
+    }
+    peakToPeak += signalMax - signalMin;                    // max - min = peak-peak amplitude
    }
- 
-   peakToPeak = signalMax - signalMin;                    // max - min = peak-peak amplitude
-   int val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
+   peakToPeak /= peakToPeakAverages;
+   val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
+   //Serial.println(peakToPeak);
 	/////
-}
- // Serial.println(val);
+
+ //Serial.println(val);
 
 // based on the decibel a loudness value is assigned
-void LoudnessSensorLoudValue() {
+
   if (val <= Thresholds[0]) {
   (loudness = 1);
   client.publish("shusher/loudness", "1");
@@ -141,7 +153,7 @@ void LoudnessSensorLoudValue() {
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.begin();
-  strip.setBrightness(10);
+  strip.setBrightness(brightnesslevellights);
   strip.clear(); 
   for(int i= 0; i<=NUM_LEDS;i++){
     delay(200);
