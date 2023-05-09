@@ -9,21 +9,21 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282828;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.homepageController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282828;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.HomepageController">
     <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="35.0" layoutX="100.0" layoutY="44.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="400.0" />
         <HBox alignment="TOP_CENTER" layoutX="100.0" layoutY="121.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="15.0" prefWidth="400.0">
             <children>
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
-                <StackPane prefHeight="150.0" prefWidth="200.0" style="-fx-background-color: #202020; -fx-border-color: #ffffff;" />
+                <StackPane fx:id="light1" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light2" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light3" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light4" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light5" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light6" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light7" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light8" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light9" prefHeight="150.0" prefWidth="200.0" />
+                <StackPane fx:id="light10" prefHeight="150.0" prefWidth="200.0" />
             </children>
             <opaqueInsets>
                 <Insets />
@@ -56,12 +56,12 @@
                 <Font name="OCR A Extended" size="8.0" />
             </font>
         </Label>
-      <Button layoutX="399.0" layoutY="175.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="101.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Off" textFill="PALEGREEN">
+      <Button fx:id="muteButton" layoutX="399.0" layoutY="175.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="101.0" style="-fx-border-color: #CF9FFF; -fx-background-color: #202020;" text="Mute" textFill="PALEGREEN">
          <font>
             <Font name="OCR A Extended" size="16.0" />
          </font>
       </Button>
-      <Button layoutX="399.0" layoutY="272.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="101.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Settings" textFill="PALEGREEN">
+      <Button layoutX="399.0" layoutY="272.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="101.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Settings" textFill="PALEGREEN">
          <font>
             <Font name="OCR A Extended" size="16.0" />
          </font>
