@@ -19,7 +19,7 @@ public class MainApplication extends Application {
         // Load homepage from fxml file
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
-        stage.setTitle("Shusher");
+        stage.setTitle("Shush3r");
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
