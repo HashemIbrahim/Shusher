@@ -11,7 +11,7 @@ The **Shusher** visually warns a User for crossing a given decibal threshold. Li
 ## Visuals
 
 **Shusher UI alongside Shusher in action**
-ezgif.com-video-to-gif.gif
+![ezgif.com-video-to-gif](/uploads/8901a8f0bf1ce14ba81d035331d3130c/ezgif.com-video-to-gif.gif)
 
 ---
 
