@@ -20,7 +20,7 @@ test-job:
     tags:
         - docker
 
-    scripts:
+    script:
         - echo "Maven test started"
         - "mvn test"
 
