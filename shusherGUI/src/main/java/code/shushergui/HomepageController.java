@@ -1,11 +1,11 @@
 package code.shushergui;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -19,6 +19,8 @@ public class HomepageController {
     // Assign fx:id to lights
     @FXML
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
+    @FXML
+    private Button settingsButton, exitButton;
 
     // Setter for MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
@@ -33,19 +35,19 @@ public class HomepageController {
 
     }
 
-
-    public void switchToSettings(ActionEvent event) throws Exception {
+    @FXML
+    private void switchToSettings() throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("settingsPage-view.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage = (Stage)settingsButton.getScene().getWindow();
+        Scene scene = new Scene(fxmlLoader.load(), 500, 300);
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-
         // Pass the MqttClient instance to the settings scene controller
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
+        runMqtt();
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -112,7 +114,7 @@ public class HomepageController {
 
     }
     // Set the background color of the lights that should light up on a given payload.
-    public void setLightsOnPayload(int payload) {
+    private void setLightsOnPayload(int payload) {
         HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
         for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
             String lightId = "light" + i;
@@ -125,6 +127,12 @@ public class HomepageController {
                 light.setStyle("-fx-background-color: #EE4B2B");
             }
         }
+    }
+
+    @FXML
+    public void exitApp() {                                 // Exit button function
+        stage = (Stage)exitButton.getScene().getWindow();   // Get stage
+        stage.close();                                      // Close stage
     }
 
 
