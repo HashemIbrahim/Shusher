@@ -9,7 +9,6 @@ const char* server = "192.168.137.1";
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
-#define baseThreshold 49
 #define sampleWindow 10
 #define peakToPeakAverages 10
 #define DEBUG 
@@ -18,9 +17,16 @@ int val;
 int sample;
 int loudness;
 int loudnessMaxReachedCount;
-int constexpr Thresholds[] = {baseThreshold,baseThreshold+3,baseThreshold+6,baseThreshold+9,baseThreshold+12,baseThreshold+15,baseThreshold+18,baseThreshold+20,baseThreshold+22,baseThreshold+26};
+int baseThreshold = 49;
+ 
+const char* TOPIC_sub = "shusher/test";                               //delete
+const char* TOPIC_pub_connection = "shusher";                         //delete
 
+//tests---------------------------
 
+uint32_t color = 0xFF00FF;
+
+//------------------------------
 
 // RGB LED Stick-------------------------------------------------------
 #include <Adafruit_NeoPixel.h>
@@ -35,13 +41,15 @@ void setup() {
   //--MQTT------------
   WiFi.begin(ssid, password);
   client.setServer(server,1883);
+  client.setCallback(callback);
+  client.subscribe("shusher");
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
     return;
 }
   //-------------------
   #ifdef DEBUG
- Serial.begin(115200);
+ Serial.begin(9600);
  #endif
  ledStartupTest();
  pinMode(WIO_MIC, INPUT);
@@ -57,7 +65,10 @@ if (!client.connected()) {
     reconnect();
   }
 
+client.loop();
+
 }
+
 //Functions
 
 //Loudness Sensor Thresholds
@@ -66,7 +77,8 @@ void LoudnessSensorLoudValue() {
     //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
   
    float peakToPeak = 0;                                  // peak-to-peak level
- 
+   int Thresholds[] = {baseThreshold,baseThreshold+3,baseThreshold+6,baseThreshold+9,baseThreshold+12,baseThreshold+15,baseThreshold+18,baseThreshold+20,baseThreshold+22,baseThreshold+26};
+
    unsigned int signalMax = 0;                            //minimum value
    unsigned int signalMin = 1024;                         //maximum value because its 10 bit
  
@@ -77,8 +89,8 @@ void LoudnessSensorLoudValue() {
     while (millis() - startMillis < sampleWindow)
     {
         sample = analogRead(WIO_MIC);                    //get reading from microphone
-        Serial.print("0, ");                             // debugging printing
-        Serial.println(sample);
+        //Serial.print("0, ");                             // debugging printing
+        //Serial.println(sample);
         delay(1);
         if (sample < 1024)                                  // toss out spurious readings
         {
@@ -193,7 +205,8 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
 void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
   
   if(loudness >= 1){
-    strip.setPixelColor(0, 255,0,0);
+    strip.setPixelColor(0, 255,0,0);        //have 3 variables, 1 for each section, after recieving a hexadecimal set each section to the value and 
+                                            //
   }
   if(loudness >= 2){
     strip.setPixelColor(1, 255,0,0);
@@ -247,6 +260,13 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
       // Once connected, publish an announcement...
+      client.publish(TOPIC_pub_connection, "hello world");
+      Serial.println("Published connection message ");
+      // ... and resubscribe
+      client.subscribe(TOPIC_sub);
+      Serial.print("Subcribed to: ");
+      Serial.println(TOPIC_sub);
+      // Once connected, publish an announcement...
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -257,12 +277,36 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
   }
 }
 
-
-
-
-//----------------------------------------------------------------------------------------------------------------------
+//--MQTT--------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 
+  void callback(char* topic, byte* payload, unsigned int length){
+    Serial.print("Message recieved on topic ");
+    Serial.println(topic);
+
+    String message;
+    for(int i = 0; i<length; i++){
+    message += (char)payload[i];
+    }
+    Serial.print("Message payload: ");
+    Serial.println(message);
+
+  if(strcmp(topic, "shusher/test") == 0){
+    if (message.equals("High")){
+      Serial.println("baseThreshold is now set to 63");
+      baseThreshold = 63;
+    }
+    else if (message.equals("Medium")){
+      Serial.println("baseThreshold is now set to 56");
+      baseThreshold = 56;
+    }
+    else if(message.equals("Low")){
+      Serial.println("baseThreshold is now set to 49");
+      baseThreshold = 49;
+
+    }
+}
+}
 
 
 
