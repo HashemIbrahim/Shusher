@@ -27,6 +27,14 @@ The **Shusher** visually warns a User for crossing a given decibal threshold. Li
 
 ---
 
+## License
+
+MIT License  
+
+Copyright (c) 2023 courses / DIT113 / 2023 / Group-14
+
+---
+
 ## Support
 Any further assistance and questions with the **Shusher** can be forwarded to:
 
