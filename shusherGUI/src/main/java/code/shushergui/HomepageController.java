@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -21,6 +22,8 @@ public class HomepageController {
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
     @FXML
     private Button settingsButton, exitButton;
+    @FXML
+    private Label thresholdLabel;
 
     // Setter for MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
@@ -32,7 +35,6 @@ public class HomepageController {
         } else {
             System.out.println("ERROR: mqttClient object is null");
         }
-
     }
 
     @FXML
@@ -44,10 +46,9 @@ public class HomepageController {
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // Pass the MqttClient instance to the settings scene controller
+        // Pass the MqttClient instance to the settingsPage controller
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
-        runMqtt();
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -77,22 +78,18 @@ public class HomepageController {
                                     resetLights();
                                     // Call function to set color of lights depending on the payload
                                     setLightsOnPayload(payload);
-
                                 });
                             }
                         }
                         @Override
                         public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
                         }
                     });
                 }).start();
-
             } catch (MqttException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             System.out.println("ERROR: mqttClient object is null");
         }
     }
@@ -110,8 +107,6 @@ public class HomepageController {
             Node light = ledStrip.lookup("#" + lightId);
             light.setStyle("-fx-background-color: #202020");
         }
-
-
     }
     // Set the background color of the lights that should light up on a given payload.
     private void setLightsOnPayload(int payload) {
@@ -129,8 +124,13 @@ public class HomepageController {
         }
     }
 
+    // Update threshold label
+    public void setThresholdLabel(String newThreshold) {
+        thresholdLabel.setText(newThreshold);
+    }
+
     @FXML
-    public void exitApp() {                                 // Exit button function
+    private void exitApp() {                                 // Exit button function
         stage = (Stage)exitButton.getScene().getWindow();   // Get stage
         stage.close();                                      // Close stage
     }

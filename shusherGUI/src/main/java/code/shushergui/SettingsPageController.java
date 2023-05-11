@@ -19,9 +19,16 @@ public class SettingsPageController {
     @FXML
     private RadioButton highThresholdButton, mediumThresholdButton, lowThresholdButton;
 
+    private String currentThreshold; // Hold the value of the current threshold set by thresholdButtons()
+
     // Setter for MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
-        this.mqttClient = mqttClient;
+        if (mqttClient != null) {
+            this.mqttClient = mqttClient;
+            System.out.println("Successfully passed mqtt instance to SettingsPageController");
+        } else {
+            System.out.println("ERROR: mqttClient object is null");
+        }
     }
 
     @FXML
@@ -38,6 +45,9 @@ public class SettingsPageController {
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
+        // Pass current threshold to homepage
+        homepageController.setThresholdLabel(currentThreshold);
+
         // Set the window and display scene
         stage.setScene(scene);
         stage.show();
@@ -47,20 +57,27 @@ public class SettingsPageController {
     // 'e' is a variable used to refer to the event object that is passed to the event handler, call thresholdButtons(button)
     @FXML
     private void initialize() {
-        lowThresholdButton.setOnAction( e -> thresholdButtons(lowThresholdButton));
-        mediumThresholdButton.setOnAction( e -> thresholdButtons(mediumThresholdButton));
-        highThresholdButton.setOnAction( e -> thresholdButtons(highThresholdButton));
+        lowThresholdButton.setOnAction( e -> thresholdButtons(lowThresholdButton, "Low"));
+        mediumThresholdButton.setOnAction( e -> thresholdButtons(mediumThresholdButton, "Medium"));
+        highThresholdButton.setOnAction( e -> thresholdButtons(highThresholdButton, "High"));
     }
 
     // Publish when thresholdButtons are clicked
     @FXML
-    private void thresholdButtons(RadioButton button) {
+    private void thresholdButtons(RadioButton button, String threshold) {
+        currentThreshold = threshold;
         try {
             switch (button.getId()) {
-                    case "lowThresholdButton" -> mqttClient.publish("shusher/test", "Low");
-                    case "mediumThresholdButton" -> mqttClient.publish("shusher/test", "Medium");
-                    case "highThresholdButton" -> mqttClient.publish("shusher/test", "High");
+                case "lowThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "Low");
                 }
+                case "mediumThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "Medium");
+                }
+                case "highThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "High");
+                }
+            }
         } catch (MqttException e) {
             throw new RuntimeException(e);
         }
