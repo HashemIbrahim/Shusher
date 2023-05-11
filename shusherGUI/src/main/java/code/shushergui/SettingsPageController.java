@@ -14,6 +14,7 @@ public class SettingsPageController {
 
     private Stage stage;
     private MyMqttClient mqttClient;
+    private Counter counter;
     @FXML
     private Button setupButton, homepageButton;
     @FXML
@@ -21,7 +22,7 @@ public class SettingsPageController {
 
     private String currentThreshold; // Hold the value of the current threshold set by thresholdButtons()
 
-    // Setter for MqttClient
+    // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
             this.mqttClient = mqttClient;
@@ -29,6 +30,11 @@ public class SettingsPageController {
         } else {
             System.out.println("ERROR: mqttClient object is null");
         }
+    }
+
+    // Set counter
+    public void setCounter(Counter counter) {
+        this.counter = counter;
     }
 
     @FXML
@@ -45,8 +51,12 @@ public class SettingsPageController {
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
+        // Create an instance of the counter and pass HomepageController
+        Counter counter = Counter.getInstance();
+        homepageController.setCounter(counter);
+
         // Pass current threshold to homepage
-        homepageController.setThresholdLabel(currentThreshold);
+        homepageController.updateThresholdLabel(currentThreshold);
 
         // Set the window and display scene
         stage.setScene(scene);

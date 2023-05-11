@@ -25,9 +25,13 @@ public class MainApplication extends Application {
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // Pass MqttClient instance to homepageController
+        // Pass MqttClient instance to HomepageController
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
+
+        // Create an instance of the counter and pass HomepageController
+        Counter counter = Counter.getInstance();
+        homepageController.setCounter(counter);
 
         // Set the window and display scene
         stage.setScene(scene);

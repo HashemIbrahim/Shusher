@@ -46,9 +46,9 @@
                 <Font name="OCR A Extended" size="16.0" />
             </font>
         </Label>
-        <Label layoutX="57.0" layoutY="232.0" prefHeight="17.0" prefWidth="148.0" text="Times exceeded:" textFill="#cf9fff">
+        <Label layoutX="53.0" layoutY="232.0" prefHeight="17.0" prefWidth="148.0" text="Times exceeded:" textFill="#cf9fff">
             <font>
-                <Font name="OCR A Extended" size="8.0" />
+                <Font name="OCR A Extended" size="10.0" />
             </font>
         </Label>
       <Button fx:id="settingsButton" layoutX="325.0" layoutY="207.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="125.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Settings" textFill="PALEGREEN">
@@ -64,6 +64,11 @@
       <Label fx:id="thresholdLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="70.0" layoutY="170.0" maxWidth="87.0" minWidth="87.0" text="Low" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
          <font>
             <Font name="OCR A Extended" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="counterLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="113.0" layoutY="233.0" maxWidth="87.0" minWidth="87.0" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
+         <font>
+            <Font name="OCR A Extended" size="14.0" />
          </font>
       </Label>
     </children>
