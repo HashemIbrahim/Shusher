@@ -18,15 +18,20 @@ public class MainApplication extends Application {
 
         // Load homepage from fxml file
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 500, 300);
         stage.setTitle("Shusher");
+        stage.setResizable(false);
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // Pass MqttClient instance to homepageController
+        // Pass MqttClient instance to HomepageController
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
+
+        // Create an instance of the counter and pass HomepageController
+        Counter counter = Counter.getInstance();
+        homepageController.setCounter(counter);
 
         // Set the window and display scene
         stage.setScene(scene);

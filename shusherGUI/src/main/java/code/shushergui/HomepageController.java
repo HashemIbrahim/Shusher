@@ -1,11 +1,13 @@
 package code.shushergui;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -14,13 +16,18 @@ import org.eclipse.paho.client.mqttv3.*;
 public class HomepageController {
     private Stage stage;
     private MyMqttClient mqttClient;
+    private Counter counter;
 
     // Variables used in SceneBuilder need to be annotated with @FXML
-    // Assign fx:id to lights
     @FXML
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
+    @FXML
+    private Button settingsButton, exitButton;
+    @FXML
+    private Label thresholdLabel, counterLabel;
 
-    // Setter for MqttClient
+
+    // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
             this.mqttClient = mqttClient;
@@ -30,22 +37,35 @@ public class HomepageController {
         } else {
             System.out.println("ERROR: mqttClient object is null");
         }
-
     }
 
+    // Set counter
+    public void setCounter(Counter counter) {
+        this.counter = counter;
+    }
 
-    public void switchToSettings(ActionEvent event) throws Exception {
+    @FXML
+    private void switchToSettings() throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("settingsPage-view.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage = (Stage)settingsButton.getScene().getWindow();
+        Scene scene = new Scene(fxmlLoader.load(), 500, 300);
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-
-        // Pass the MqttClient instance to the settings scene controller
+        // Pass the MqttClient instance to the settingsPage controller
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
+
+        // Create an instance of the counter and pass HomepageController
+        Counter counter = Counter.getInstance();
+        settingsPageController.setCounter(counter);
+
+        // Pass threshold label text to SettingsPageController and select threshold button
+        settingsPageController.setThreshold(thresholdLabel.getText());
+
+        // Pass selected thresholdButtonId back to SettingsPageController
+
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -56,9 +76,6 @@ public class HomepageController {
         if (mqttClient != null) {
             try {
                 mqttClient.subscribe("shusher/loudness");
-                // Create a new thread using lambda expression. Handle incoming messages without blocking the main thread.
-                // The thread runs constantly in the background while the program is running.
-                new Thread(() -> {
                     // Set the callback function for arriving messages.
                     mqttClient.setCallback(new MqttCallback() {
                         @Override
@@ -70,27 +87,24 @@ public class HomepageController {
                             // parse incoming payload into integer
                             int payload = Integer.parseInt(new String(mqttMessage.getPayload()));
                             if (topic.equals("shusher/loudness")) {
-                                Platform.runLater(() -> {
+                                Platform.runLater(() -> {       // updates the UI from a background thread
                                     // Call function to reset the background color of all lights
                                     resetLights();
                                     // Call function to set color of lights depending on the payload
                                     setLightsOnPayload(payload);
-
+                                    // Call function to update the counter every time the payload is 10
+                                    updateCounter(payload);
                                 });
                             }
                         }
                         @Override
                         public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
                         }
                     });
-                }).start();
-
             } catch (MqttException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             System.out.println("ERROR: mqttClient object is null");
         }
     }
@@ -108,11 +122,9 @@ public class HomepageController {
             Node light = ledStrip.lookup("#" + lightId);
             light.setStyle("-fx-background-color: #202020");
         }
-
-
     }
     // Set the background color of the lights that should light up on a given payload.
-    public void setLightsOnPayload(int payload) {
+    private void setLightsOnPayload(int payload) {
         HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
         for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
             String lightId = "light" + i;
@@ -125,6 +137,25 @@ public class HomepageController {
                 light.setStyle("-fx-background-color: #EE4B2B");
             }
         }
+    }
+
+    // Update threshold label
+    public void updateThresholdLabel(String newThreshold) {
+        thresholdLabel.setText(newThreshold);
+    }
+
+    // Increment the threshold counter whenever the payload from the "shusher/loudness" topic is 10
+    private void updateCounter(int payload) {
+        if (payload == 10) {
+            counter.increment();
+        }
+        // Update the counter label with the new value.
+        counterLabel.setText(String.valueOf(counter.getCounter()));
+    }
+    @FXML
+    private void exitApp() {                                 // Exit button function
+        stage = (Stage)exitButton.getScene().getWindow();   // Get stage
+        stage.close();                                      // Close stage
     }
 
 

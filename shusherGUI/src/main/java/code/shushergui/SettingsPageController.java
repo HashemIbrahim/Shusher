@@ -1,27 +1,64 @@
 package code.shushergui;
 
-import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
-
+import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
+
 
 public class SettingsPageController {
 
     private Stage stage;
     private MyMqttClient mqttClient;
+    private Counter counter;
+    @FXML
+    private Button setupButton, homepageButton;
+    @FXML
+    private RadioButton highThresholdButton, mediumThresholdButton, lowThresholdButton;
+    @FXML
+    private ToggleGroup radioGroup;
 
-    // Setter for MqttClient
+    private String currentThreshold; // Hold the value of the current threshold set by thresholdButtons()
+
+
+    // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
-        this.mqttClient = mqttClient;
+        if (mqttClient != null) {
+            this.mqttClient = mqttClient;
+            System.out.println("Successfully passed mqtt instance to SettingsPageController");
+        } else {
+            System.out.println("ERROR: mqttClient object is null");
+        }
     }
 
-    public void switchToHomepage(ActionEvent event) throws IOException {
+    // Set threshold text and threshold button
+    public void setThreshold(String currentThreshold) {
+        this.currentThreshold = currentThreshold;
+        if (currentThreshold.equals("Low")) {
+            lowThresholdButton.setSelected(true);
+        } else if (currentThreshold.equals("Medium")) {
+            mediumThresholdButton.setSelected(true);
+        } else if (currentThreshold.equals("High")) {
+            highThresholdButton.setSelected(true);
+        }
+    }
+
+    // Set counter
+    public void setCounter(Counter counter) {
+        this.counter = counter;
+    }
+
+    @FXML
+    private void switchToHomepage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
-        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        stage = (Stage)homepageButton.getScene().getWindow();
+        Scene scene = new Scene(fxmlLoader.load(), 500, 300);
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -31,8 +68,46 @@ public class SettingsPageController {
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
+        // Create an instance of the counter and pass HomepageController
+        Counter counter = Counter.getInstance();
+        homepageController.setCounter(counter);
+
+        // Pass current threshold to homepage
+        homepageController.updateThresholdLabel(currentThreshold);
+
         // Set the window and display scene
         stage.setScene(scene);
         stage.show();
     }
+
+    // Initialize method is the entry point for initializing the controller and its associated UI elements.
+    // 'e' is a variable used to refer to the event object that is passed to the event handler, call thresholdButtons(button)
+    @FXML
+    private void initialize() {
+        lowThresholdButton.setOnAction( e -> thresholdButtons(lowThresholdButton, "Low"));
+        mediumThresholdButton.setOnAction( e -> thresholdButtons(mediumThresholdButton, "Medium"));
+        highThresholdButton.setOnAction( e -> thresholdButtons(highThresholdButton, "High"));
+    }
+
+    // Publish when thresholdButtons are clicked
+    @FXML
+    private void thresholdButtons(RadioButton button, String threshold) {
+        currentThreshold = threshold;
+        try {
+            switch (button.getId()) {
+                case "lowThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "Low");
+                }
+                case "mediumThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "Medium");
+                }
+                case "highThresholdButton" -> {
+                    mqttClient.publish("shusher/test", "High");
+                }
+            }
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
