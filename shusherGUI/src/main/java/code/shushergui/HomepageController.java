@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ public class HomepageController {
     private Button settingsButton, exitButton;
     @FXML
     private Label thresholdLabel, counterLabel;
+
 
     // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
@@ -58,6 +60,12 @@ public class HomepageController {
         // Create an instance of the counter and pass HomepageController
         Counter counter = Counter.getInstance();
         settingsPageController.setCounter(counter);
+
+        // Pass threshold label text to SettingsPageController and select threshold button
+        settingsPageController.setThreshold(thresholdLabel.getText());
+
+        // Pass selected thresholdButtonId back to SettingsPageController
+
 
         // Set the window and display scene
         stage.setScene(scene);

@@ -35,9 +35,6 @@
       </Label>
       <VBox alignment="CENTER" layoutX="69.0" layoutY="144.0" prefHeight="93.0" prefWidth="88.0">
          <children>
-            <fx:define>
-               <ToggleGroup fx:id="radioGroup" />
-            </fx:define>
             <RadioButton fx:id="highThresholdButton" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" text="High" textAlignment="CENTER" textFill="PALEGREEN">
                <font>
                   <Font name="OCR A Extended" size="12.0" />

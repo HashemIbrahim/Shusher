@@ -4,7 +4,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
@@ -19,8 +21,11 @@ public class SettingsPageController {
     private Button setupButton, homepageButton;
     @FXML
     private RadioButton highThresholdButton, mediumThresholdButton, lowThresholdButton;
+    @FXML
+    private ToggleGroup radioGroup;
 
     private String currentThreshold; // Hold the value of the current threshold set by thresholdButtons()
+
 
     // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
@@ -29,6 +34,18 @@ public class SettingsPageController {
             System.out.println("Successfully passed mqtt instance to SettingsPageController");
         } else {
             System.out.println("ERROR: mqttClient object is null");
+        }
+    }
+
+    // Set threshold text and threshold button
+    public void setThreshold(String currentThreshold) {
+        this.currentThreshold = currentThreshold;
+        if (currentThreshold.equals("Low")) {
+            lowThresholdButton.setSelected(true);
+        } else if (currentThreshold.equals("Medium")) {
+            mediumThresholdButton.setSelected(true);
+        } else if (currentThreshold.equals("High")) {
+            highThresholdButton.setSelected(true);
         }
     }
 
