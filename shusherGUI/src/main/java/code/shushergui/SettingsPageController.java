@@ -18,6 +18,8 @@ public class SettingsPageController {
     private Stage stage;
     private MyMqttClient mqttClient;
     private Counter counter;
+    private String currentThreshold; // Store the value of the current threshold set by thresholdButtons()
+    private String[] lightTheme;    // Store the current light theme
     @FXML
     private Button setupButton, homepageButton;
     @FXML
@@ -25,9 +27,7 @@ public class SettingsPageController {
     @FXML
     private ToggleGroup thresholdGroup, lightGroup;
 
-    private String currentThreshold; // Store the value of the current threshold set by thresholdButtons()
-
-    private String[] lightTheme;    // Store the current light theme
+    // **Group setter functions at top of class**
 
     // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
@@ -51,6 +51,7 @@ public class SettingsPageController {
         }
     }
 
+    // Set light theme colors and buttons
     public void setLightTheme(String[] lightTheme) {
         this.lightTheme = lightTheme;
         if (Arrays.equals(lightTheme, new String[]{"#AAFF00", "#FFEA00", "#EE4B2B"})) {
@@ -62,11 +63,12 @@ public class SettingsPageController {
         }
     }
 
-    // Set counter
+    // Set threshold counter
     public void setCounter(Counter counter) {
         this.counter = counter;
     }
 
+    // Add function to switch to homepage scene. Pass variables to homepage controller
     @FXML
     private void switchToHomepage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
@@ -75,7 +77,6 @@ public class SettingsPageController {
 
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-
 
         // Pass the MqttClient instance to the homepage scene controller
         HomepageController homepageController = fxmlLoader.getController();
@@ -86,7 +87,7 @@ public class SettingsPageController {
         homepageController.setCounter(counter);
 
         // Pass current threshold to homepage
-        homepageController.updateThresholdLabel(currentThreshold);
+        homepageController.setThresholdLabel(currentThreshold);
 
         // Pass current light theme to homepage
         homepageController.setLightTheme(lightTheme);
@@ -111,7 +112,7 @@ public class SettingsPageController {
         partyTheme.setOnAction( e -> changeLightTheme(partyTheme, lightTheme = new String[] {"#00FFFF", "#DA70D6", "#FFFF00"}));
     }
 
-    // Publish when thresholdButtons are clicked
+    // Publish payload to "shusher/threshold" topic when thresholdButtons are clicked
     @FXML
     private void thresholdButtons(RadioButton button, String threshold) {
         currentThreshold = threshold;
@@ -126,9 +127,10 @@ public class SettingsPageController {
         }
     }
 
+    // Publish payload to LED strip sections when light theme buttons are clicked.
+    // Payload color codes differ from gui color codes because Grove RGB LED strip can not display complex colors
     private void changeLightTheme(RadioButton button, String[] updateLightTheme) {
         lightTheme = updateLightTheme;
-        // Payload color codes differ from gui color codes because Grove RGB LED strip can not display complex colors
         try {
             switch (button.getId()) {
                 case "defaultTheme" -> {

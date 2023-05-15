@@ -5,7 +5,6 @@ import org.eclipse.paho.client.mqttv3.*;        //mqtt library
 public class MyMqttClient {
 
     public final MqttClient mqttClient;
-    private String topic;
 
     public MyMqttClient(String broker, String clientID) throws MqttException{
         this.mqttClient = new MqttClient(broker, clientID);

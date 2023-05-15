@@ -10,6 +10,7 @@ import java.io.IOException;
 public class MainApplication extends Application {
 
     MyMqttClient mqttClient;
+    Counter counter;
 
     @Override
     public void start(Stage stage) throws IOException, MqttException {
@@ -38,13 +39,12 @@ public class MainApplication extends Application {
         homepageController.setMqttClient(mqttClient);
 
         // Create an instance of the counter and pass HomepageController
-        Counter counter = Counter.getInstance();
+        counter.getInstance();
         homepageController.setCounter(counter);
 
         // Set the window and display scene
         stage.setScene(scene);
         stage.show();
-
     }
 
     public static void main(String[] args) {
