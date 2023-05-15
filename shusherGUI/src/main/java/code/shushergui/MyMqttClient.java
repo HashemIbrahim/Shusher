@@ -11,7 +11,6 @@ public class MyMqttClient {
         this.mqttClient = new MqttClient(broker, clientID);
     }
 
-
     public void connect() throws MqttException {
         MqttConnectOptions options = new MqttConnectOptions();
         // Broker should discard any previous session state associated with this client and start a new one.

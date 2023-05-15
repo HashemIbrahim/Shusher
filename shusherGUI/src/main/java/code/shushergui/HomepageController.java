@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -18,15 +17,19 @@ public class HomepageController {
     private MyMqttClient mqttClient;
     private Counter counter;
 
+    private String [] lightTheme = {"#AAFF00", "#FFEA00", "#EE4B2B"};   // Default light theme colors
+
     // Variables used in SceneBuilder need to be annotated with @FXML
     @FXML
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
     @FXML
     private Button settingsButton, exitButton;
     @FXML
-    private Label thresholdLabel, counterLabel;
+    private Label thresholdLabel, counterLabel, distanceLabel;
 
-
+    public void setLightTheme(String [] lightTheme) {
+        this.lightTheme = lightTheme;
+    }
     // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
@@ -35,7 +38,7 @@ public class HomepageController {
             // Run 'runMqtt' function
             runMqtt();
         } else {
-            System.out.println("ERROR: mqttClient object is null");
+            System.out.println("ERROR: mqttClient object is null in homepage");
         }
     }
 
@@ -57,15 +60,15 @@ public class HomepageController {
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
 
-        // Create an instance of the counter and pass HomepageController
-        Counter counter = Counter.getInstance();
+        // Pass counter to SettingsPageController
+        counter.getInstance();
         settingsPageController.setCounter(counter);
 
         // Pass threshold label text to SettingsPageController and select threshold button
         settingsPageController.setThreshold(thresholdLabel.getText());
 
-        // Pass selected thresholdButtonId back to SettingsPageController
-
+        // Pass the current light theme to SettingsPageController
+        settingsPageController.setLightTheme(lightTheme);
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -76,6 +79,7 @@ public class HomepageController {
         if (mqttClient != null) {
             try {
                 mqttClient.subscribe("shusher/loudness");
+                mqttClient.subscribe("shusher/distance");
                     // Set the callback function for arriving messages.
                     mqttClient.setCallback(new MqttCallback() {
                         @Override
@@ -84,18 +88,22 @@ public class HomepageController {
                         }
                         @Override
                         public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                            // parse incoming payload into integer
-                            int payload = Integer.parseInt(new String(mqttMessage.getPayload()));
-                            if (topic.equals("shusher/loudness")) {
-                                Platform.runLater(() -> {       // updates the UI from a background thread
+                            Platform.runLater(() -> {       // updates the UI from a background thread
+                                if (topic.equals("shusher/loudness")) {
+                                    int payload = Integer.parseInt(new String(mqttMessage.getPayload()));       // parse incoming payload into integer
                                     // Call function to reset the background color of all lights
                                     resetLights();
                                     // Call function to set color of lights depending on the payload
                                     setLightsOnPayload(payload);
                                     // Call function to update the counter every time the payload is 10
                                     updateCounter(payload);
-                                });
-                            }
+                                }
+                                if (topic.equals("shusher/distance")) {
+                                    String payload = new String(mqttMessage.getPayload());                      // parse incoming payload into String
+                                    // Call function to update the distance label on incoming payload
+                                    displayDistance(payload);
+                                }
+                            });
                         }
                         @Override
                         public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
@@ -125,24 +133,29 @@ public class HomepageController {
     }
     // Set the background color of the lights that should light up on a given payload.
     private void setLightsOnPayload(int payload) {
-        HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
-        for (int i = 1; i <= payload; i++){                         // Loop through lights, payload represents the number of lights that should be turned on
+        HBox ledStrip = (HBox) light1.getParent();                      // Store HBox object in ledStrip variable
+        for (int i = 1; i <= payload; i++){                             // Loop through lights, payload represents the number of lights that should be turned on
             String lightId = "light" + i;
             Node light = ledStrip.lookup("#" + lightId);
-            if (i <= 3) {                                           // Lights 1-3 are set to green
-                light.setStyle("-fx-background-color: #AAFF00");
-            } else if (i <= 7) {                                    // Lights 4-7 are set to yellow
-                light.setStyle("-fx-background-color: #FFEA00");
-            } else {                                                // Lights 8-10 are set to red
-                light.setStyle("-fx-background-color: #EE4B2B");
+            if (i <= 3) {
+                light.setStyle("-fx-background-color:" + lightTheme[0]);    // Light 1-3
+            } else if (i <= 7) {
+                light.setStyle("-fx-background-color:" + lightTheme[1]);    // Light 4-7
+            } else {
+                light.setStyle("-fx-background-color:" + lightTheme[2]);    // Light 8-10
             }
         }
+    }
+
+    private void displayDistance(String payload) {
+        distanceLabel.setText(payload + "cm");
     }
 
     // Update threshold label
     public void updateThresholdLabel(String newThreshold) {
         thresholdLabel.setText(newThreshold);
     }
+
 
     // Increment the threshold counter whenever the payload from the "shusher/loudness" topic is 10
     private void updateCounter(int payload) {
@@ -153,9 +166,11 @@ public class HomepageController {
         counterLabel.setText(String.valueOf(counter.getCounter()));
     }
     @FXML
-    private void exitApp() {                                 // Exit button function
+    private void exitApp() {                                // Exit button function
         stage = (Stage)exitButton.getScene().getWindow();   // Get stage
         stage.close();                                      // Close stage
+        System.out.println("Application closed");
+
     }
 
 
