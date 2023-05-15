@@ -15,7 +15,7 @@ PubSubClient client(wioClient);
 #define peakToPeakAverages 10
 #define brightnesslevellights 20
 #define DEBUGSERIAL
-#define DEBUGPRINTING 
+//#define DEBUGPRINTING 
 #define DEBUGWIFI
 //#define DEBUGMQTT
 int const ranges []= {15,40,60,75,100};
@@ -24,6 +24,12 @@ float const sensvalues [] = {1,1.5,1.9,2.3,2.8,3.2};
 //--Setting the Ranger--------------------------------------------------------------
 Ultrasonic ultrasonic(2);
 //---------------------------------------------------------------------------------
+//--Setting the screen--------------------------------------------------------------
+#include "Ultrasonic.h"
+#include "TFT_eSPI.h"
+#define LOOP_PERIOD 10
+TFT_eSPI tft;
+TFT_eSprite spr = TFT_eSprite(&tft);
 //--Setting variables--------------------------------------------------------------
 int loudness;
 int loudnessMaxReachedCount;
@@ -31,8 +37,8 @@ float Sens = 3;
 float baseThreshold = 49;
 long RangeInCentimeters;
 float Thresholds[10];
-
-
+int currentrange;
+float decibels;
 
 // RGB LED Stick-------------------------------------------------------
 #include <Adafruit_NeoPixel.h>
@@ -45,6 +51,7 @@ Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
 void setup() {
  setupWIFI();
  setupSerial();
+ setupScreen();
  ledStartupTest();
  setupMic();
 }
@@ -58,9 +65,15 @@ void loop() {
     reconnect();
   }
  #endif
+ displayData();
 }
 //Functions
-
+void setupScreen() {
+ tft.begin();
+ tft.init();
+ tft.setRotation(3);
+ tft.fillScreen(TFT_DARKGREY);
+}
 void setupWIFI() { //connects to the wifi
   #ifdef DEBUGWIFI
   WiFi.begin(ssid, password);
@@ -81,7 +94,7 @@ void setupMic() { //sets what to use as the mic
   pinMode(WIO_MIC, INPUT);
 }
 void ThresholdCalculator() {
-  int currentrange = rangeFinder(); //gets the range from the ranger right now
+  currentrange = rangeFinder(); //gets the range from the ranger right now
   //calulates what the sensitivity should be based on that range
   if (currentrange < ranges[0] ) {Sens=sensvalues[5];}
   else if (currentrange >= ranges[0] && currentrange < ranges[1]) {Sens=sensvalues[4];}
@@ -134,51 +147,51 @@ void LoudnessSensorLoudValue() {
     peakToPeak += signalMax - signalMin;                    // max - min = peak-peak amplitude
    }
   peakToPeak /= peakToPeakAverages;
-  float val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
+  decibels = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
   // printing for debugging
   #ifdef DEBUGPRINTING
-  Serial.println(val);
+  Serial.println(decibels);
   #endif
 
 // based on the decibel a loudness value is assigned and published to mqtt
 
-  if (val <= Thresholds[0]) {
+  if (decibels <= Thresholds[0]) {
   (loudness = 1);
   client.publish("shusher/loudness", "1");
   }
-  else if (val > Thresholds[0] && val <=  Thresholds[1]) {
+  else if (decibels > Thresholds[0] && decibels <=  Thresholds[1]) {
    (loudness = 2);
    client.publish("shusher/loudness", "2");
   }
-   else if (val >  Thresholds[1] && val <=  Thresholds[2]) {
+   else if (decibels >  Thresholds[1] && decibels <=  Thresholds[2]) {
    (loudness = 3);
    client.publish("shusher/loudness", "3");
   }
-   else if (val >  Thresholds[2] && val <=  Thresholds[3]) {
+   else if (decibels >  Thresholds[2] && decibels <=  Thresholds[3]) {
    (loudness = 4);
    client.publish("shusher/loudness", "4");
   }
-   else if (val >  Thresholds[3] && val <=  Thresholds[4]) {
+   else if (decibels >  Thresholds[3] && decibels <=  Thresholds[4]) {
    (loudness = 5);
    client.publish("shusher/loudness", "5");
    }
-  else if (val >  Thresholds[4] && val <=  Thresholds[5]) {
+  else if (decibels >  Thresholds[4] && decibels <=  Thresholds[5]) {
    (loudness = 6);
    client.publish("shusher/loudness", "6");
   }   
-  else if (val >  Thresholds[5] && val <=  Thresholds[6]) {
+  else if (decibels >  Thresholds[5] && decibels <=  Thresholds[6]) {
    (loudness = 7);
    client.publish("shusher/loudness", "7");
   }
-  else if (val >  Thresholds[6] && val <=  Thresholds[7]) {
+  else if (decibels >  Thresholds[6] && decibels <=  Thresholds[7]) {
    (loudness = 8);
    client.publish("shusher/loudness", "8");
   }
-  else if (val >  Thresholds[7] && val <=  Thresholds[8]) {
+  else if (decibels >  Thresholds[7] && decibels <=  Thresholds[8]) {
    (loudness = 9);
    client.publish("shusher/loudness", "9");
   }  
-  else if (val >  Thresholds[8] ) {
+  else if (decibels >  Thresholds[8] ) {
 
    (loudness = 10);
    client.publish("shusher/loudness", "10");
@@ -194,8 +207,45 @@ void LoudnessSensorLoudValue() {
 int rangeFinder(){
  //Measues distance in CM with short delay to ensure fast and accurate measurements
  return RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
- Serial.println(RangeInCentimeters);
 }
+
+void displayData() {
+  spr.createSprite(320, 240);
+  if (loudness >= 5) {
+    spr.fillScreen(TFT_DARKGREY);
+    spr.setTextColor(TFT_GREEN, TFT_DARKGREY);
+    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
+    spr.setTextSize(2); // Increase text size for "SHHHH..."
+    spr.drawString("SHHHH...", 100, 100); // Display "SHHHH..." in the middle
+  } else {
+    spr.fillSprite(TFT_DARKGREY);
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
+    spr.setTextSize(1);
+
+    // Display "SHUSHER" in the middle
+    spr.drawString("SHUSHER", 100, 100);
+
+    // Display range in the bottom left
+    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
+    spr.drawNumber(currentrange, 20, 200); // Adjust the coordinates as needed
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.drawString("cm", 70, 200); // Adjust the coordinates as needed
+
+    // Display decibels in the bottom right
+    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
+    spr.drawNumber(decibels, 200, 200); // Adjust the coordinates as needed
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.drawString("dB", 240, 200); // Adjust the coordinates as needed
+  }
+
+  spr.pushSprite(0, 0); // Push the sprite to (0, 0)
+  spr.deleteSprite();
+}
+
+
+
+
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.begin();
