@@ -2,6 +2,10 @@
 #include <rpcWiFi.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
 //for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
 const char* ssid = "ISAACHP";
 const char* password = "isaac123";
@@ -19,12 +23,14 @@ int loudness;
 int loudnessMaxReachedCount;
 int baseThreshold = 49;
  
-const char* TOPIC_sub = "shusher/test";                               //delete
-const char* TOPIC_pub_connection = "shusher";                         //delete
+const char* TOPIC_sub1 = "shusher/threshold";  
+const char* TOPIC_sub2 = "shusher/lights/+";                             //delete
+const char* TOPIC_pub_connection = "shusher";                              //delete
 
-//tests---------------------------
+//---------------------------
 
 uint32_t color = 0xFF00FF;
+
 
 //------------------------------
 
@@ -33,6 +39,9 @@ uint32_t color = 0xFF00FF;
 #define NUM_LEDS 10
 #define DATA_PIN 0
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
+
+uint32_t ledStickColors[] = {0xFF0000, 0xFFFF00, 0x00FF00 };
+
 //----------------------------------------------------------------------
 
 
@@ -42,11 +51,11 @@ void setup() {
   WiFi.begin(ssid, password);
   client.setServer(server,1883);
   client.setCallback(callback);
-  client.subscribe("shusher");
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
     return;
 }
+
   //-------------------
   #ifdef DEBUG
  Serial.begin(9600);
@@ -168,28 +177,28 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.setBrightness(brightnesslevellights);
   strip.clear(); 
   for(int i= 0; i<=NUM_LEDS;i++){
-    delay(200);
+    delay(100);
     if(i<3){
-    strip.setPixelColor(i, 255,0,0);       //setting the color of led number 1-3 to green
+    strip.setPixelColor(i, ledStickColors[0]);       //setting the color of led number 1-3 to green
     
   }
     else if(i<7){
-    strip.setPixelColor(i,255,255,0);    //setting the color of led number 4-7 yellow
+    strip.setPixelColor(i,ledStickColors[1]);    //setting the color of led number 4-7 yellow
   }
 
     else if(i<10) {
-    strip.setPixelColor(i,0,255,0);       //Setting the color of LED number 8-9 red
+    strip.setPixelColor(i,ledStickColors[2]);       //Setting the color of LED number 8-9 red
   }
     else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
        for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
-          strip.setPixelColor(k, 0, 255, 0);
+          strip.setPixelColor(k, ledStickColors[2]);
         }
         strip.show();
-        delay(200);
+        delay(150);
         strip.clear();
         strip.show();
-        delay(200);
+        delay(150);
         }
     }
     delay(150);
@@ -202,47 +211,45 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
 
 
 
-void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
-  
+void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top. 
   if(loudness >= 1){
-    strip.setPixelColor(0, 255,0,0);        //have 3 variables, 1 for each section, after recieving a hexadecimal set each section to the value and 
-                                            //
+    strip.setPixelColor(0, ledStickColors[0]);      
   }
   if(loudness >= 2){
-    strip.setPixelColor(1, 255,0,0);
+    strip.setPixelColor(1, ledStickColors[0]);
   }
   if(loudness >= 3){
-    strip.setPixelColor(2, 255,0,0);
+    strip.setPixelColor(2, ledStickColors[0]);
   }
   if(loudness >= 4){
-    strip.setPixelColor(3, 255,255,0);
+    strip.setPixelColor(3, ledStickColors[1]);
   }
   if(loudness >= 5){
-    strip.setPixelColor(4, 255,255,0);
+    strip.setPixelColor(4, ledStickColors[1]);
   }
   if(loudness >= 6){
-    strip.setPixelColor(5, 255,255,0);
+    strip.setPixelColor(5, ledStickColors[1]);
   }
   if(loudness >= 7){
-    strip.setPixelColor(6, 255,255,0);
+    strip.setPixelColor(6, ledStickColors[1]);
   }
   if(loudness >= 8){
-    strip.setPixelColor(7, 0,255,0);
+    strip.setPixelColor(7, ledStickColors[2]);
   }
   if(loudness >= 9){
-    strip.setPixelColor(8, 0,255,0);
+    strip.setPixelColor(8, ledStickColors[2]);
   }
   
    if(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red
      for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
-          strip.setPixelColor(k, 0, 255, 0);
+          strip.setPixelColor(k, ledStickColors[2]);
         }
         strip.show();
-        delay(200);
+        delay(150);
         strip.clear();
         strip.show();
-        delay(200);
+        delay(150);
         }
     }
   
@@ -260,12 +267,12 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
     if (client.connect(clientId.c_str())) {
       Serial.println("connected");
       // Once connected, publish an announcement...
-      client.publish(TOPIC_pub_connection, "hello world");
-      Serial.println("Published connection message ");
       // ... and resubscribe
-      client.subscribe(TOPIC_sub);
+      client.subscribe(TOPIC_sub2);
+      client.subscribe(TOPIC_sub1);
       Serial.print("Subcribed to: ");
-      Serial.println(TOPIC_sub);
+      Serial.println(TOPIC_sub1);
+      Serial.println(TOPIC_sub2);
       // Once connected, publish an announcement...
     } else {
       Serial.print("failed, rc=");
@@ -279,33 +286,64 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
 
 //--MQTT--------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
-
+  //This function is called when a message over mqtt is recieved 
   void callback(char* topic, byte* payload, unsigned int length){
+
     Serial.print("Message recieved on topic ");
     Serial.println(topic);
 
     String message;
-    for(int i = 0; i<length; i++){
+    for(int i = 0; i<length; i++){   //iterates through the payload converting it from byte to a string
     message += (char)payload[i];
     }
     Serial.print("Message payload: ");
     Serial.println(message);
 
-  if(strcmp(topic, "shusher/test") == 0){
-    if (message.equals("High")){
-      Serial.println("baseThreshold is now set to 63");
-      baseThreshold = 63;
+  if(strcmp(topic, "shusher/threshold") == 0){ //checks if the topic is "shusher/threshold"
+    changeThreshold(message);               // if it is, call the changeThreshold cunction
+    Serial.print(message);
+  }
+  else if (strstr(topic, "shusher/lights/") != NULL){  // check if the topic contains "shusher/lights/". strstr checks if the given string is a substring of the topic.
+    char* section = topic + strlen("shusher/colors/"); // extracts the section from the topic string by moving the pointer to the first letter of "section"
+    changeLightsTheme(message,section);       //call the changeLightsTheme with the message payload and section as arguments
+  }
+}
+
+//this function changes the theme of the LED lights based on the message payload and section
+void changeLightsTheme(String message, char* section){
+    char* endptr;                                             // lines 317,318, 310,309 is recomended by chatgpt, i think strtoul is a good function to use to convert a hexadecimal string becase of the error handling,
+                                                              // strlen was a smart way to extract the section from the topic because the whole topic is not needed in the changeLightsTheme
+    uint32_t hexValue = strtoul(message.c_str(), &endptr, 16);// converts the message payload from a hexadecimal string to uint32_t to be able to set the lights with message  
+    Serial.print("Converted value: ");
+    Serial.println(hexValue);
+    if(strcmp(section, "section1") == 0){ //checks if section is "section1"
+      ledStickColors[0] = hexValue; // if it is, set the color of section 1 to the converted value 
     }
-    else if (message.equals("Medium")){
+    else if(strcmp(section, "section2") == 0){
+      ledStickColors[1] = hexValue;
+    }
+    else if(strcmp(section, "section3") == 0){
+      ledStickColors[2] = hexValue;
+    }
+    
+}
+
+//this function hcanges the baseThreshold based on the message payload.
+void changeThreshold(String message){
+  if (message.equals("High")){        // checks if the message payload equals "High" 
+      Serial.println("baseThreshold is now set to 63"); 
+      baseThreshold = 63;               // if it does, change the baseThreshold to 63.
+    }
+    else if (message.equals("Medium")){ //checks if the message payload equals "Medium"
       Serial.println("baseThreshold is now set to 56");
-      baseThreshold = 56;
+      baseThreshold = 56;             // if it does, change the baseThreshold to 56.
     }
-    else if(message.equals("Low")){
+    else if(message.equals("Low")){     //checks if the message payload equals "Low"
       Serial.println("baseThreshold is now set to 49");
-      baseThreshold = 49;
+      baseThreshold = 49;             //if it does, change the baseThreshold to 56.
 
     }
-}
+    Serial.println(message);
 }
 
 
