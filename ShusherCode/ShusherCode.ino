@@ -3,9 +3,11 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "Ultrasonic.h"
+#include <String>
+
 //for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
-const char* ssid = "ISAACHP";
-const char* password = "isaac123";
+const char* ssid = "Johans Dator";
+const char* password = "johan123";
 const char* server = "192.168.137.1";
 WiFiClient wioClient;
 PubSubClient client(wioClient);
@@ -15,9 +17,9 @@ PubSubClient client(wioClient);
 #define peakToPeakAverages 10
 #define brightnesslevellights 20
 #define DEBUGSERIAL
-#define DEBUGPRINTING 
+// #define DEBUGPRINTING 
 #define DEBUGWIFI
-//#define DEBUGMQTT
+#define DEBUGMQTT
 int const ranges []= {15,40,60,75,100};
 float const sensvalues [] = {1,1.5,1.9,2.3,2.8,3.2};
 //---------------------------------------------------------------------------------
@@ -81,14 +83,18 @@ void setupMic() { //sets what to use as the mic
   pinMode(WIO_MIC, INPUT);
 }
 void ThresholdCalculator() {
-  int currentrange = rangeFinder(); //gets the range from the ranger right now
+  int currentRange = rangeFinder(); //gets the range from the ranger right now
+  //---MQTT-------------------------------------------------------------------------------------------------------
+  const char* currentDistance = String(currentRange).c_str();         // converts the integer into a const char*, this is necessary for the publish method to work
+  client.publish("shusher/distance", currentDistance);                //published the currentDistance via MQTT with the topic "shusher/distance" 
+  //-----------------------------------------------------------------------------------------------------------
   //calulates what the sensitivity should be based on that range
-  if (currentrange < ranges[0] ) {Sens=sensvalues[5];}
-  else if (currentrange >= ranges[0] && currentrange < ranges[1]) {Sens=sensvalues[4];}
-  else if ((currentrange >= ranges[1] && currentrange < ranges[2]) ) {Sens=sensvalues[3];}
-  else if (currentrange >= ranges[2] && currentrange < ranges[3] ) {Sens=sensvalues[2];}
-  else if (currentrange >= ranges[3] && currentrange < ranges[4]) {Sens=sensvalues[1];}
-  else if (currentrange >= ranges[4]) {Sens=sensvalues[0];}
+  if (currentRange < ranges[0] ) {Sens=sensvalues[5];}
+  else if (currentRange >= ranges[0] && currentRange < ranges[1]) {Sens=sensvalues[4];}
+  else if ((currentRange >= ranges[1] && currentRange < ranges[2]) ) {Sens=sensvalues[3];}
+  else if (currentRange >= ranges[2] && currentRange < ranges[3] ) {Sens=sensvalues[2];}
+  else if (currentRange >= ranges[3] && currentRange < ranges[4]) {Sens=sensvalues[1];}
+  else if (currentRange >= ranges[4]) {Sens=sensvalues[0];}
   
   // printing for debugging
   #ifdef DEBUGPRINTING
