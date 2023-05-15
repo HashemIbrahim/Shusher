@@ -55,6 +55,7 @@ void setup() {
     Serial.println("WiFi not connected");
     return;
 }
+
   //-------------------
   #ifdef DEBUG
  Serial.begin(9600);
@@ -210,13 +211,9 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
 
 
 
-void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
-  for(int i = 0; i < NUM_LEDS; i++){
-    if(loudness <)
-  } 
+void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top. 
   if(loudness >= 1){
-    strip.setPixelColor(0, ledStickColors[0]);        //have 3 variables, 1 for each section, after recieving a hexadecimal set each section to the value and 
-                                            //
+    strip.setPixelColor(0, ledStickColors[0]);      
   }
   if(loudness >= 2){
     strip.setPixelColor(1, ledStickColors[0]);
