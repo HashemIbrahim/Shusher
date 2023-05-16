@@ -5,16 +5,25 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
-
 import java.io.IOException;
 
 public class MainApplication extends Application {
 
+    MyMqttClient mqttClient;
+    Counter counter;
+
     @Override
     public void start(Stage stage) throws IOException, MqttException {
-        // Create an instance of MqttClient and use component via forwarding
-        MyMqttClient mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
-        mqttClient.connect();
+        // Create a try catch block that creates an instance of MyMqttClient if the instance connects to MQTT, otherwise the MQTT instance is null
+        // Enables the application to run even if the application is not connected to mqtt.
+        try {
+            mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
+            mqttClient.connect();
+            System.out.println("Connected to MQTT broker");
+        } catch (MqttException e) {
+            mqttClient = null;
+            System.out.println("Failed to connect to MQTT broker");
+        }
 
         // Load homepage from fxml file
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("homepage-view.fxml"));
@@ -30,7 +39,7 @@ public class MainApplication extends Application {
         homepageController.setMqttClient(mqttClient);
 
         // Create an instance of the counter and pass HomepageController
-        Counter counter = Counter.getInstance();
+        counter.getInstance();
         homepageController.setCounter(counter);
 
         // Set the window and display scene

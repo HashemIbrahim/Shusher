@@ -71,5 +71,10 @@
             <Font name="OCR A Extended" size="14.0" />
          </font>
       </Label>
+      <Label fx:id="distanceLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="207.0" layoutY="170.0" maxWidth="87.0" minWidth="87.0" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
+         <font>
+            <Font name="OCR A Extended" size="24.0" />
+         </font>
+      </Label>
     </children>
 </Pane>
