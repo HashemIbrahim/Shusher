@@ -11,15 +11,15 @@ WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
 //--Setting constants--------------------------------------------------------------
-#define sampleWindow 10
-#define peakToPeakAverages 10
+#define sampleWindow 5
+#define peakToPeakAverages 7
 #define brightnesslevellights 20
 #define DEBUGSERIAL
-//#define DEBUGPRINTING 
+#define DEBUGPRINTING 
 #define DEBUGWIFI
 //#define DEBUGMQTT
 int const ranges []= {15,40,60,75,100};
-float const sensvalues [] = {1,1.5,1.9,2.3,2.8,3.2};
+float const sensvalues [] = {1,1.75,2,2.35,2.8,3.3};
 //---------------------------------------------------------------------------------
 //--Setting the Ranger--------------------------------------------------------------
 Ultrasonic ultrasonic(2);
@@ -27,7 +27,7 @@ Ultrasonic ultrasonic(2);
 //--Setting the screen--------------------------------------------------------------
 #include "Ultrasonic.h"
 #include "TFT_eSPI.h"
-#define LOOP_PERIOD 10
+#define LOOP_PERIOD 1
 TFT_eSPI tft;
 TFT_eSprite spr = TFT_eSprite(&tft);
 //--Setting variables--------------------------------------------------------------
@@ -59,20 +59,23 @@ void setup() {
 void loop() {
  ThresholdCalculator();
  LoudnessSensorLoudValue();
+ //if (isDataChanged()) {
+ displayDataSPR();
+ 
  setLedStick();
  #ifdef DEBUGMQTT
  if (!client.connected()) {
     reconnect();
   }
  #endif
- displayData();
+
 }
 //Functions
 void setupScreen() {
  tft.begin();
  tft.init();
  tft.setRotation(3);
- tft.fillScreen(TFT_DARKGREY);
+ tft.fillScreen(TFT_BLACK);
 }
 void setupWIFI() { //connects to the wifi
   #ifdef DEBUGWIFI
@@ -209,38 +212,82 @@ int rangeFinder(){
  return RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
 }
 
-void displayData() {
-  spr.createSprite(320, 240);
-  if (loudness >= 5) {
-    spr.fillScreen(TFT_DARKGREY);
+bool isDataChanged() {
+  int previousRange = 0;
+  int previousDecibels = 0;
+  bool previousLoudness = false;
+  // Check if the data has changed
+  if (currentrange != previousRange || decibels != previousDecibels || loudness != previousLoudness) {
+    // Update the previous data with the current values
+    previousRange = currentrange;
+    previousDecibels = decibels;
+    previousLoudness = loudness;
+    return true;
+  }
+
+  return false;
+}
+
+void displayDataSPR() {
+  spr.createSprite(250, 40);
+  if (loudness >= 4) {
+    spr.fillSprite(TFT_DARKGREY);
     spr.setTextColor(TFT_GREEN, TFT_DARKGREY);
     spr.setFreeFont(&FreeSansBoldOblique12pt7b);
-    spr.setTextSize(2); // Increase text size for "SHHHH..."
-    spr.drawString("SHHHH...", 100, 100); // Display "SHHHH..." in the middle
+    spr.setTextSize(1);
+    spr.drawString("SHHHH...", 100, 30);
   } else {
     spr.fillSprite(TFT_DARKGREY);
     spr.setTextColor(TFT_GREEN, TFT_BLACK);
     spr.setFreeFont(&FreeSansBoldOblique12pt7b);
     spr.setTextSize(1);
+    spr.drawString("SHUSHER", 100, 30);
+    spr.setTextSize(1);
+    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
+    spr.drawNumber(currentrange, 0, 0);
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.drawString(" cm", 30, 0);
+    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
+    spr.drawNumber(decibels, 120, 0);
+    spr.setTextColor(TFT_GREEN, TFT_BLACK);
+    spr.drawString(" dB", 210, 0);
+  }
+  
+  
+  spr.pushSprite(30, 190);
+  spr.deleteSprite();
+}
+void displayDataTFT() {
+    tft.fillScreen(TFT_BLACK);
+    if (loudness >= 8) {
+      tft.setTextColor(TFT_WHITE, TFT_DARKGREY);
+      tft.setFreeFont(&FreeSansBoldOblique12pt7b);
+      tft.setTextSize(2);
+      tft.setCursor(0, 80); // Adjust the coordinates as needed
+      tft.println("SHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH..."); // Display "SHHHH..." in the middle
+  } else {
+      tft.setTextColor(TFT_ORANGE, TFT_BLACK);
+      tft.setFreeFont(&FreeSansBoldOblique12pt7b);
+      tft.setTextSize(1);
 
     // Display "SHUSHER" in the middle
-    spr.drawString("SHUSHER", 100, 100);
+      tft.setCursor(100, 100); // Adjust the coordinates as needed
+      tft.println("SHUSHER");
 
     // Display range in the bottom left
-    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
-    spr.drawNumber(currentrange, 20, 200); // Adjust the coordinates as needed
-    spr.setTextColor(TFT_GREEN, TFT_BLACK);
-    spr.drawString("cm", 70, 200); // Adjust the coordinates as needed
+      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+      tft.setCursor(20, 200); // Adjust the coordinates as needed
+      tft.print(currentrange);
+      tft.setTextColor(TFT_GREEN, TFT_BLACK);
+      tft.println(" cm");
 
     // Display decibels in the bottom right
-    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
-    spr.drawNumber(decibels, 200, 200); // Adjust the coordinates as needed
-    spr.setTextColor(TFT_GREEN, TFT_BLACK);
-    spr.drawString("dB", 240, 200); // Adjust the coordinates as needed
-  }
-
-  spr.pushSprite(0, 0); // Push the sprite to (0, 0)
-  spr.deleteSprite();
+      tft.setTextColor(TFT_WHITE, TFT_BLACK);
+      tft.setCursor(200, 200); // Adjust the coordinates as needed
+      tft.print(decibels);
+      tft.setTextColor(TFT_RED, TFT_BLACK);
+      tft.println(" dB");
+    }
 }
 
 
