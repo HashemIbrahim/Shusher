@@ -7,18 +7,27 @@
 #include <sstream>
 #include <string>
 //for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
-const char* ssid = "ISAACHP";
-const char* password = "isaac123";
+const char* ssid = "Johans Dator";
+const char* password = "johan123";
 const char* server = "192.168.137.1";
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
+//--Setting constants--------------------------------------------------------------
 #define sampleWindow 10
 #define peakToPeakAverages 10
-#define DEBUG 
-const int brightnesslevellights = 20;
-int val;
-int sample;
+#define brightnesslevellights 20
+#define DEBUGSERIAL
+// #define DEBUGPRINTING 
+#define DEBUGWIFI
+#define DEBUGMQTT
+int const ranges []= {15,40,60,75,100};
+float const sensvalues [] = {1,1.5,1.9,2.3,2.8,3.2};
+//---------------------------------------------------------------------------------
+//--Setting the Ranger--------------------------------------------------------------
+Ultrasonic ultrasonic(2);
+//---------------------------------------------------------------------------------
+//--Setting variables--------------------------------------------------------------
 int loudness;
 int loudnessMaxReachedCount;
 int baseThreshold = 49;
@@ -46,63 +55,87 @@ uint32_t ledStickColors[] = {0xFF0000, 0xFFFF00, 0x00FF00 };
 
 
 void setup() {
-  // put your setup code here, to run once:
-  //--MQTT------------
- /* WiFi.begin(ssid, password);
+ setupWIFI();
+ setupSerial();
+ ledStartupTest();
+ setupMic();
+}
+
+void loop() {
+ ThresholdCalculator();
+ LoudnessSensorLoudValue();
+ setLedStick();
+ #ifdef DEBUGMQTT
+ if (!client.connected()) {
+    reconnect();
+  }
+ #endif
+}
+//Functions
+
+void setupWIFI() { //connects to the wifi
+  #ifdef DEBUGWIFI
+  WiFi.begin(ssid, password);
   client.setServer(server,1883);
   client.setCallback(callback);
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
-    return;
-    
+  }
+  #endif
 }
-*/
-  //-------------------
-  #ifdef DEBUG
- Serial.begin(9600);
- #endif
- ledStartupTest();
- pinMode(WIO_MIC, INPUT);
+
+void setupSerial() { //starts the serial for input
+  #ifdef DEBUGSERIAL
+    Serial.begin(115200);
+  #endif
+}
+
+void setupMic() { //sets what to use as the mic
+  pinMode(WIO_MIC, INPUT);
+}
+void ThresholdCalculator() {
+  int currentRange = rangeFinder(); //gets the range from the ranger right now
+  //---MQTT-------------------------------------------------------------------------------------------------------
+  const char* currentDistance = String(currentRange).c_str();         // converts the integer into a const char*, this is necessary for the publish method to work
+  client.publish("shusher/distance", currentDistance);                //published the currentDistance via MQTT with the topic "shusher/distance" 
+  //-----------------------------------------------------------------------------------------------------------
+  //calulates what the sensitivity should be based on that range
+  if (currentRange < ranges[0] ) {Sens=sensvalues[5];}
+  else if (currentRange >= ranges[0] && currentRange < ranges[1]) {Sens=sensvalues[4];}
+  else if ((currentRange >= ranges[1] && currentRange < ranges[2]) ) {Sens=sensvalues[3];}
+  else if (currentRange >= ranges[2] && currentRange < ranges[3] ) {Sens=sensvalues[2];}
+  else if (currentRange >= ranges[3] && currentRange < ranges[4]) {Sens=sensvalues[1];}
+  else if (currentRange >= ranges[4]) {Sens=sensvalues[0];}
+  
+  // printing for debugging
+  #ifdef DEBUGPRINTING
+  for (int i = 0; i < 10; i++) {
+    Serial.print(Thresholds[i]); // print the value of the current element
+    Serial.print(" "); // add a space to separate values
+  }
+  Serial.println();
+  #endif
+
+ //sets the threshold values based on this sensitivity
+ for (int i = 0; i < 10; i++) {
+   Thresholds[i] =  baseThreshold + (i * Sens);
+}
  
 }
-
-void loop() {
-  // put your main code here, to run repeatedly:
-LoudnessSensorLoudValue();
-setLedStick();
-// this is a known issue where it has to connect to even display data
-/*if (!client.connected()) {
-    reconnect();
-  }
-
-client.loop();
-*/
-
-}
-
-//Functions
-
 //Loudness Sensor Thresholds
 void LoudnessSensorLoudValue() {
-  
-    //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
-  
-   float peakToPeak = 0;                                  // peak-to-peak level
-   int Thresholds[] = {baseThreshold,baseThreshold+3,baseThreshold+6,baseThreshold+9,baseThreshold+12,baseThreshold+15,baseThreshold+18,baseThreshold+20,baseThreshold+22,baseThreshold+26};
 
-   unsigned int signalMax = 0;                            //minimum value
-   unsigned int signalMin = 1024;                         //maximum value because its 10 bit
- 
-                                                          // collect data for 50 mS
-  unsigned long startMillis = 0;                   // Start of sample window
+  //this portion of code was taken from https://how2electronics.com/iot-decibelmeter-sound-sensor-esp8266/ it creates whats known as an 'envelope' to encompass the sound. This is necessary due to the way the analog value is recorded and how sound is a wave.
+  float peakToPeak = 0;                                  // peak-to-peak level
+  unsigned int signalMax = 0;                            //minimum value
+  unsigned int signalMin = 1024;                         //maximum value because its 10 bit
+  unsigned long startMillis = 0; 
+  int sample;                        // Start of sample window
   for(unsigned int i = 0; i <peakToPeakAverages ; i++){
     startMillis = millis(); 
-    while (millis() - startMillis < sampleWindow)
+    while (millis() - startMillis < sampleWindow)        // reads value for 10ms
     {
-        sample = analogRead(WIO_MIC);                    //get reading from microphone
-        //Serial.print("0, ");                             // debugging printing
-        //Serial.println(sample);
-        delay(1);
+        sample = analogRead(WIO_MIC);                       //get reading from microphone
         if (sample < 1024)                                  // toss out spurious readings
         {
           if (sample > signalMax)
@@ -117,14 +150,14 @@ void LoudnessSensorLoudValue() {
     }
     peakToPeak += signalMax - signalMin;                    // max - min = peak-peak amplitude
    }
-   peakToPeak /= peakToPeakAverages;
-   val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
-   //Serial.println(peakToPeak);
-	/////
+  peakToPeak /= peakToPeakAverages;
+  float val = map(peakToPeak,20,900,49.5,90);              // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
+  // printing for debugging
+  #ifdef DEBUGPRINTING
+  Serial.println(val);
+  #endif
 
- //Serial.println(val);
-
-// based on the decibel a loudness value is assigned
+// based on the decibel a loudness value is assigned and published to mqtt
 
   if (val <= Thresholds[0]) {
   (loudness = 1);
@@ -146,23 +179,23 @@ void LoudnessSensorLoudValue() {
    (loudness = 5);
    client.publish("shusher/loudness", "5");
    }
- else if (val >  Thresholds[4] && val <=  Thresholds[5]) {
+  else if (val >  Thresholds[4] && val <=  Thresholds[5]) {
    (loudness = 6);
    client.publish("shusher/loudness", "6");
   }   
-   else if (val >  Thresholds[5] && val <=  Thresholds[6]) {
+  else if (val >  Thresholds[5] && val <=  Thresholds[6]) {
    (loudness = 7);
    client.publish("shusher/loudness", "7");
   }
-   else if (val >  Thresholds[6] && val <=  Thresholds[7]) {
+  else if (val >  Thresholds[6] && val <=  Thresholds[7]) {
    (loudness = 8);
    client.publish("shusher/loudness", "8");
   }
- else if (val >  Thresholds[7] && val <=  Thresholds[8]) {
+  else if (val >  Thresholds[7] && val <=  Thresholds[8]) {
    (loudness = 9);
    client.publish("shusher/loudness", "9");
   }  
-   else if (val >  Thresholds[8] ) {
+  else if (val >  Thresholds[8] ) {
 
    (loudness = 10);
    client.publish("shusher/loudness", "10");
@@ -172,7 +205,14 @@ void LoudnessSensorLoudValue() {
   
   }
  
-  }
+}
+
+// Ultrasonic ranger functionality
+int rangeFinder(){
+ //Measues distance in CM with short delay to ensure fast and accurate measurements
+ return RangeInCentimeters = (double)ultrasonic.MeasureInCentimeters();
+ Serial.println(RangeInCentimeters);
+}
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
   strip.begin();
@@ -259,11 +299,11 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
       Serial.println(TOPIC_sub2);
       // Once connected, publish an announcement...
     } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
+     Serial.print("failed, rc=");
+     Serial.print(client.state());
+     Serial.println(" try again in 5 seconds");
+     // Wait 5 seconds before retrying
+     delay(5000);
     }
   }
 }
