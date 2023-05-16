@@ -48,14 +48,15 @@ uint32_t ledStickColors[] = {0xFF0000, 0xFFFF00, 0x00FF00 };
 void setup() {
   // put your setup code here, to run once:
   //--MQTT------------
-  WiFi.begin(ssid, password);
+ /* WiFi.begin(ssid, password);
   client.setServer(server,1883);
   client.setCallback(callback);
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
     return;
+    
 }
-
+*/
   //-------------------
   #ifdef DEBUG
  Serial.begin(9600);
@@ -70,11 +71,12 @@ void loop() {
 LoudnessSensorLoudValue();
 setLedStick();
 // this is a known issue where it has to connect to even display data
-if (!client.connected()) {
+/*if (!client.connected()) {
     reconnect();
   }
 
 client.loop();
+*/
 
 }
 
@@ -212,36 +214,18 @@ void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
 
 
 void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top. 
-  if(loudness >= 1){
-    strip.setPixelColor(0, ledStickColors[0]);      
-  }
-  if(loudness >= 2){
-    strip.setPixelColor(1, ledStickColors[0]);
-  }
-  if(loudness >= 3){
-    strip.setPixelColor(2, ledStickColors[0]);
-  }
-  if(loudness >= 4){
-    strip.setPixelColor(3, ledStickColors[1]);
-  }
-  if(loudness >= 5){
-    strip.setPixelColor(4, ledStickColors[1]);
-  }
-  if(loudness >= 6){
-    strip.setPixelColor(5, ledStickColors[1]);
-  }
-  if(loudness >= 7){
-    strip.setPixelColor(6, ledStickColors[1]);
-  }
-  if(loudness >= 8){
-    strip.setPixelColor(7, ledStickColors[2]);
-  }
-  if(loudness >= 9){
-    strip.setPixelColor(8, ledStickColors[2]);
-  }
-  
-   if(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red
-     for(int j = 0; j < 5; j++){
+  for(int i = 0; i < loudness; i++){
+      if(i <= 2){
+      strip.setPixelColor(i, ledStickColors[0]);
+      }
+      if(i > 2 && i <7){
+      strip.setPixelColor(i,ledStickColors[1]);
+      }
+      if(i>=7){
+      strip.setPixelColor(i, ledStickColors[2]);
+      }
+      if (i >= 9){ 
+      for(int j = 0; j < 3; j++){
         for(int k = 0; k < NUM_LEDS; k++){
           strip.setPixelColor(k, ledStickColors[2]);
         }
@@ -252,10 +236,10 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
         delay(150);
         }
     }
-  
+    }
   strip.show();
   strip.clear();
-  } 
+  }
 
   void reconnect() {                                                  // method is taken fron the MQTT workshop
   // Loop until we're reconnected
