@@ -51,31 +51,49 @@ Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
 void setup() {
  setupWIFI();
  setupSerial();
- setupScreen();
  ledStartupTest();
  setupMic();
+ setupScreen();
 }
 
 void loop() {
  ThresholdCalculator();
  LoudnessSensorLoudValue();
  //if (isDataChanged()) {
- displayDataSPR();
- 
+ displayDataSPRMika();
  setLedStick();
  #ifdef DEBUGMQTT
  if (!client.connected()) {
     reconnect();
   }
- #endif
+ #endif 
 
 }
 //Functions
 void setupScreen() {
  tft.begin();
- tft.init();
  tft.setRotation(3);
- tft.fillScreen(TFT_BLACK);
+
+ //Background Color Setting
+ tft.fillTriangle(0, 0, 0, 240, 320, 0, TFT_BLACK);
+ tft.fillTriangle(320, 0, 0, 240, 320, 240, TFT_DARKGREEN);
+ tft.fillCircle(0, 240, 100, TFT_PURPLE);
+
+ //Data Table Setting
+ tft.fillRect(25, 25, 175, 50, TFT_PURPLE);
+ tft.fillRect(120, 165, 175, 50, TFT_PURPLE);
+
+ //Max Boundary Breaks Setting
+ tft.setFreeFont(&FreeSansBold9pt7b);
+ tft.setTextSize(0.4);
+ tft.setTextColor(TFT_WHITE, TFT_PURPLE);
+ tft.drawString("Breaks:", 5, 170);
+
+ //Logo display
+ tft.setFreeFont(&FreeSansBold12pt7b);
+ tft.setTextColor(TFT_WHITE);
+ tft.setTextSize(2);
+ tft.drawString("Shusher", 65, 100);
 }
 void setupWIFI() { //connects to the wifi
   #ifdef DEBUGWIFI
@@ -228,70 +246,51 @@ bool isDataChanged() {
   return false;
 }
 
-void displayDataSPR() {
-  spr.createSprite(250, 40);
-  if (loudness >= 4) {
-    spr.fillSprite(TFT_DARKGREY);
-    spr.setTextColor(TFT_GREEN, TFT_DARKGREY);
-    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
-    spr.setTextSize(1);
-    spr.drawString("SHHHH...", 100, 30);
-  } else {
-    spr.fillSprite(TFT_DARKGREY);
-    spr.setTextColor(TFT_GREEN, TFT_BLACK);
-    spr.setFreeFont(&FreeSansBoldOblique12pt7b);
-    spr.setTextSize(1);
-    spr.drawString("SHUSHER", 100, 30);
-    spr.setTextSize(1);
-    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
-    spr.drawNumber(currentrange, 0, 0);
-    spr.setTextColor(TFT_GREEN, TFT_BLACK);
-    spr.drawString(" cm", 30, 0);
-    spr.setTextColor(TFT_PURPLE, TFT_BLACK);
-    spr.drawNumber(decibels, 120, 0);
-    spr.setTextColor(TFT_GREEN, TFT_BLACK);
-    spr.drawString(" dB", 210, 0);
-  }
-  
-  
-  spr.pushSprite(30, 190);
-  spr.deleteSprite();
-}
-void displayDataTFT() {
-    tft.fillScreen(TFT_BLACK);
-    if (loudness >= 8) {
-      tft.setTextColor(TFT_WHITE, TFT_DARKGREY);
-      tft.setFreeFont(&FreeSansBoldOblique12pt7b);
-      tft.setTextSize(2);
-      tft.setCursor(0, 80); // Adjust the coordinates as needed
-      tft.println("SHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH..."); // Display "SHHHH..." in the middle
-  } else {
-      tft.setTextColor(TFT_ORANGE, TFT_BLACK);
-      tft.setFreeFont(&FreeSansBoldOblique12pt7b);
-      tft.setTextSize(1);
+void displayDataSPRMika(){
+  //Data Display of Ultrasonic Ranger
+  spr.createSprite(165, 40);
+  spr.fillSprite(TFT_DARKGREEN);
+  spr.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+  spr.setFreeFont(&FreeSansBold9pt7b);
+  spr.drawString("cm", 120, 20);
+  spr.setFreeFont(&FreeSansBold18pt7b);
+  spr.drawNumber(currentrange, 50, 10);
+  spr.pushSprite(30, 30);
 
-    // Display "SHUSHER" in the middle
-      tft.setCursor(100, 100); // Adjust the coordinates as needed
-      tft.println("SHUSHER");
+  //Data Display of Loudness
+  spr.fillSprite(TFT_BLACK);
+  spr.setTextColor(TFT_WHITE, TFT_BLACK);
+  spr.setFreeFont(&FreeSansBold9pt7b);
+  spr.drawString("Vol", 120, 20);
+  spr.setFreeFont(&FreeSansBold18pt7b);
+  spr.drawNumber(loudness, 50, 10);
+  spr.pushSprite(125, 170);
 
-    // Display range in the bottom left
-      tft.setTextColor(TFT_WHITE, TFT_BLACK);
-      tft.setCursor(20, 200); // Adjust the coordinates as needed
-      tft.print(currentrange);
-      tft.setTextColor(TFT_GREEN, TFT_BLACK);
-      tft.println(" cm");
+  //Data display of boundary breaks
+  spr.fillSprite(TFT_PURPLE);
+  spr.setTextColor(TFT_WHITE, TFT_PURPLE);
+  spr.drawNumber(loudnessMaxReachedCount, 110, 0);
+  spr.pushSprite(-100, 200);
 
-    // Display decibels in the bottom right
-      tft.setTextColor(TFT_WHITE, TFT_BLACK);
-      tft.setCursor(200, 200); // Adjust the coordinates as needed
-      tft.print(decibels);
-      tft.setTextColor(TFT_RED, TFT_BLACK);
-      tft.println(" dB");
+  /*if(loudness >= 8){
+    spr.setFreeFont(&FreeSansBold18pt7b);
+    for(int i = 0; i<4 ; i++){
+    spr.deleteSprite();
+    spr.createSprite(320, 240);
+    spr.fillSprite(TFT_RED);
+    spr.setTextColor(TFT_BLACK, TFT_RED);
+    spr.drawString("SHHHHHHHH", 160, 120);
+    spr.pushSprite(0, 0);
+    delay(100);
+    spr.fillSprite(TFT_BLACK);
+    spr.setTextColor(TFT_RED, TFT_BLACK);
+    spr.drawString("SHHHHHHHH", 160, 120);
+    spr.pushSprite(0,0);
+    delay(100);
     }
+  } */
+
 }
-
-
-
 
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
@@ -395,5 +394,5 @@ void reconnect() {                                                  // method is
      // Wait 5 seconds before retrying
      delay(5000);
     }
-  }
+  } 
 }
