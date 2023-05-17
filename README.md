@@ -29,7 +29,7 @@ The **Shusher** visually warns a User for crossing a given decibal threshold. Li
 
 ## License
 
-MIT License  
+[MIT License](https://git.chalmers.se/courses/dit113/2023/group-14/shusher/-/blob/ReadMe-updates/LICENSE)  
 
 Copyright (c) 2023 courses / DIT113 / 2023 / Group-14
 
