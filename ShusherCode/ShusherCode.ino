@@ -73,9 +73,12 @@ void loop() {
 void setupScreen() {
  tft.begin();
  tft.setRotation(3);
+ resetScreen();
 
- //Background Color Setting
- tft.fillTriangle(0, 0, 0, 240, 320, 0, TFT_BLACK);
+}
+
+void resetScreen(){
+  tft.fillTriangle(0, 0, 0, 240, 320, 0, TFT_BLACK);
  tft.fillTriangle(320, 0, 0, 240, 320, 240, TFT_DARKGREEN);
  tft.fillCircle(0, 240, 100, TFT_PURPLE);
 
@@ -271,22 +274,20 @@ void displayDataSPRMika(){
   spr.setTextColor(TFT_WHITE, TFT_PURPLE);
   spr.drawNumber(loudnessMaxReachedCount, 110, 0);
   spr.pushSprite(-100, 200);
-
-  for(int i = 0; i<4 ; i++){
-    spr.deleteSprite();
-    spr.createSprite(320, 240);
-    spr.fillSprite(TFT_RED);
-    spr.setTextColor(TFT_BLACK, TFT_RED);
-    spr.drawString("SHHHHHHHHHHHHH", 30, 120);
-    spr.pushSprite(0, 0);
-    delay(400);
-    spr.fillSprite(TFT_BLACK);
-    spr.setTextColor(TFT_RED, TFT_BLACK);
-    spr.drawString("SHHHHHHHHHHHHH", 30, 120);
-    spr.pushSprite(0,0);
-    delay(400);
-    }
   } 
+
+//Function to flash a SHHHH across the screen
+void flashSHHH(){
+  tft.fillScreen(TFT_RED);
+  tft.setTextColor(TFT_BLACK, TFT_RED);
+  tft.setTextSize(3);
+  tft.drawString("SHHHHHHHHHHHHH", 0, 100);
+  delay(50);
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextColor(TFT_RED, TFT_BLACK);
+  tft.drawString("SHHHHHHHHHHHHH", 0, 100);
+  delay(50);
+}
 
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
@@ -356,17 +357,18 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
     strip.setPixelColor(8, 0,255,0);
   }
   
-   if(loudness >= 10){                 //when the stick is at maximum(meaning led number 10) the whole stick flashes red
+   if(loudness >= 10){                //when the stick is at maximum(meaning led number 10) the whole stick flashes red and GUI also flashed red
      for(int j = 0; j < 5; j++){
         for(int k = 0; k < NUM_LEDS; k++){
           strip.setPixelColor(k, 0, 255, 0);
         }
+        flashSHHH(); //Starts Flashing Screen with SHHHH 
         strip.show();
-        delay(200);
+        delay(100);
         strip.clear();
         strip.show();
-        delay(200);
-        }
+        delay(100);
+        } resetScreen(); //resets screen to norm after flashing SHHHHH
     }
   
   strip.show();
