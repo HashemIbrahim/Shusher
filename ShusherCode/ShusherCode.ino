@@ -189,6 +189,7 @@ void LoudnessSensorLoudValue() {
 
     loudness = 10;
     loudnessMaxReachedCount++;  // adds one to a count of how many times the max threshold was reached
+    client.publish("shusher/loudness/counter", loudnessMaxReachedCount);
   }
 }
 
