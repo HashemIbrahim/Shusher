@@ -3,10 +3,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include "Ultrasonic.h"
+#include "WifiSetup.h"
 //for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
-const char* ssid = "ISAACHP";
-const char* password = "isaac123";
-const char* server = "192.168.137.1";
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
