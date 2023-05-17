@@ -46,7 +46,9 @@ Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
 uint32_t ledStickColors[] = {0xFF0000, 0xFFFF00, 0x00FF00 };
 
 //----------------------------------------------------------------------
-
+const char* TOPIC_sub1 = "shusher/threshold";
+const char* TOPIC_sub2 = "shusher/lights/+";
+const char* TOPIC_pub_connection = "shusher";
 
 void setup() {
   setupWIFI();
