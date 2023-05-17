@@ -15,7 +15,8 @@ import org.eclipse.paho.client.mqttv3.*;
 public class HomepageController {
     private Stage stage;
     private MyMqttClient mqttClient;
-    private Counter counter;
+
+    private String counterValue;
     private String [] lightTheme = {"#AAFF00", "#FFEA00", "#EE4B2B"};   // Default light theme colors
 
     //  Annotate variables used in SceneBuilder with @FXML
@@ -33,6 +34,12 @@ public class HomepageController {
         this.lightTheme = lightTheme;
     }
 
+    // Set counter
+    public void setCounter(String counterValue) {
+        this.counterValue = counterValue;
+        counterLabel.setText(counterValue);
+    }
+
     // Set MqttClient
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
@@ -43,11 +50,6 @@ public class HomepageController {
         } else {
             System.out.println("ERROR: mqttClient object is null in homepage");
         }
-    }
-
-    // Set threshold counter
-    public void setCounter(Counter counter) {
-        this.counter = counter;
     }
 
     // Set threshold label
@@ -69,15 +71,14 @@ public class HomepageController {
         SettingsPageController settingsPageController = fxmlLoader.getController();
         settingsPageController.setMqttClient(mqttClient);
 
-        // Pass counter to SettingsPageController
-        counter.getInstance();
-        settingsPageController.setCounter(counter);
-
         // Pass threshold label text to SettingsPageController and select threshold button
         settingsPageController.setThreshold(thresholdLabel.getText());
 
         // Pass the current light theme to SettingsPageController
         settingsPageController.setLightTheme(lightTheme);
+
+        // Pass the counter value to SettingsPageController
+        settingsPageController.setCounterValue(counterValue);
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -91,6 +92,7 @@ public class HomepageController {
             try {
                 mqttClient.subscribe("shusher/loudness");
                 mqttClient.subscribe("shusher/distance");
+                mqttClient.subscribe("shusher/loudness/counter");
                     // Set the callback function for arriving messages.
                     mqttClient.setCallback(new MqttCallback() {
                         @Override
@@ -106,13 +108,16 @@ public class HomepageController {
                                     resetLights();
                                     // Call function to set color of lights depending on the payload
                                     setLightsOnPayload(payload);
-                                    // Call function to update the counter every time the payload is 10
-                                    updateCounter(payload);
                                 }
+                                String payload = new String(mqttMessage.getPayload());                      // Parse incoming payload into String
                                 if (topic.equals("shusher/distance")) {
-                                    String payload = new String(mqttMessage.getPayload());                      // Parse incoming payload into String
                                     // Call function to update the distance label on incoming payload
                                     displayDistance(payload);
+                                }
+                                if (topic.equals("shusher/loudness/counter")){
+                                    // Call function to set counter label on incoming payload
+                                    updateCounter(payload);
+                                    counterValue = payload;
                                 }
                             });
                         }
@@ -163,13 +168,9 @@ public class HomepageController {
         distanceLabel.setText(payload + "cm");
     }
 
-    // Increment the threshold counter whenever the payload from the "shusher/loudness" topic is 10
-    private void updateCounter(int payload) {
-        if (payload == 10) {
-            counter.increment();
-        }
-        // Update the counter label with the new value.
-        counterLabel.setText(String.valueOf(counter.getCounter()));
+    // Update counter
+    private void updateCounter(String payload) {
+        counterLabel.setText(payload);
     }
 
     // Exit button function

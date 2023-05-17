@@ -17,9 +17,9 @@ public class SettingsPageController {
 
     private Stage stage;
     private MyMqttClient mqttClient;
-    private Counter counter;
     private String currentThreshold; // Store the value of the current threshold set by thresholdButtons()
     private String[] lightTheme;    // Store the current light theme
+    private String counterValue;
     @FXML
     private Button setupButton, homepageButton;
     @FXML
@@ -37,6 +37,11 @@ public class SettingsPageController {
         } else {
             System.out.println("ERROR: mqttClient object is null in settings page");
         }
+    }
+
+    // Set counter value
+    public void setCounterValue(String counterValue) {
+        this.counterValue = counterValue;
     }
 
     // Set threshold text and threshold button
@@ -63,11 +68,6 @@ public class SettingsPageController {
         }
     }
 
-    // Set threshold counter
-    public void setCounter(Counter counter) {
-        this.counter = counter;
-    }
-
     // Add function to switch to homepage scene. Pass variables to homepage controller
     @FXML
     private void switchToHomepage() throws IOException {
@@ -82,15 +82,14 @@ public class SettingsPageController {
         HomepageController homepageController = fxmlLoader.getController();
         homepageController.setMqttClient(mqttClient);
 
-        // Create an instance of the counter and pass HomepageController
-        counter.getInstance();
-        homepageController.setCounter(counter);
-
         // Pass current threshold to homepage
         homepageController.setThresholdLabel(currentThreshold);
 
         // Pass current light theme to homepage
         homepageController.setLightTheme(lightTheme);
+
+        // Update the threshold counter in homepage
+        homepageController.setCounter(counterValue);
 
         // Set the window and display scene
         stage.setScene(scene);
