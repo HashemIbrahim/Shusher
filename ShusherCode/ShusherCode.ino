@@ -4,13 +4,12 @@
 #include <PubSubClient.h>
 #include "Ultrasonic.h"
 #include "WifiSetup.h"
-//for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
 //--Setting constants--------------------------------------------------------------
-#define sampleWindow 5
-#define peakToPeakAverages 7
+#define sampleWindow 10
+#define peakToPeakAverages 10
 #define brightnesslevellights 20
 #define DEBUGSERIAL
 #define DEBUGPRINTING
