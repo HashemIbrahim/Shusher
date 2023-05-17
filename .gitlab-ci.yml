@@ -1,4 +1,4 @@
-image: latest
+image: maven:latest
 
 stages:
     - package
