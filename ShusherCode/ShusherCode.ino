@@ -192,7 +192,7 @@ void LoudnessSensorLoudValue() {
     Serial.println(counter);
     client.publish("shusher/loudness/counter", counter);
   }
-  client.publish("shusher/loudness", "loudness");
+  client.publish("shusher/loudness", loudness);
 }
 
 // Ultrasonic ranger functionality
