@@ -4,18 +4,17 @@
 #include <PubSubClient.h>
 #include "Ultrasonic.h"
 #include "WifiSetup.h"
-//for simplicity, the internet settings are hardcoded for now but will be a part of a header file later in the git ignore.
 WiFiClient wioClient;
 PubSubClient client(wioClient);
 //---------------------------------------------------------------------
 //--Setting constants--------------------------------------------------------------
-#define sampleWindow 5
-#define peakToPeakAverages 7
+#define sampleWindow 10
+#define peakToPeakAverages 10
 #define brightnesslevellights 20
 #define DEBUGSERIAL
 #define DEBUGPRINTING
 #define DEBUGWIFI
-//#define DEBUGMQTT
+#define DEBUGMQTT
 int const ranges[] = { 15, 40, 60, 75, 100 };
 float const sensvalues[] = { 1, 1.75, 2, 2.35, 2.8, 3.3 };
 //---------------------------------------------------------------------------------
