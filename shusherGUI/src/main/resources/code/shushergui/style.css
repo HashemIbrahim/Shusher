@@ -1,3 +1,12 @@
 .button:hover {
     -fx-border-width: 3px;
 }
+
+.radio-button:hover {
+    -fx-border-width: 3px;
+}
+
+.radio-button .radio {
+    -fx-background-color: transparent;
+    -fx-mark-color : #98fb98;
+}
