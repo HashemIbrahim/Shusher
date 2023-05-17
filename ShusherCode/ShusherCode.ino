@@ -34,7 +34,7 @@ float Sens = 3;
 float baseThreshold = 49;
 long RangeInCentimeters;
 float Thresholds[10];
-int currentrange;
+int currentRange;
 float decibels;
 
 // RGB LED Stick-------------------------------------------------------
@@ -96,7 +96,7 @@ void setupMic() {  //sets what to use as the mic
   pinMode(WIO_MIC, INPUT);
 }
 void ThresholdCalculator() {
-  int currentRange = rangeFinder(); //gets the range from the ranger right now
+  currentRange = rangeFinder(); //gets the range from the ranger right now
   //---MQTT-------------------------------------------------------------------------------------------------------
   const char* currentDistance = String(currentRange).c_str();         // converts the integer into a const char*, this is necessary for the publish method to work
   client.publish("shusher/distance", currentDistance);                //published the currentDistance via MQTT with the topic "shusher/distance" 
@@ -211,7 +211,7 @@ void displayDataSPRMika() {
   spr.setFreeFont(&FreeSansBold9pt7b);
   spr.drawString("cm", 120, 20);
   spr.setFreeFont(&FreeSansBold18pt7b);
-  spr.drawNumber(currentrange, 50, 10);
+  spr.drawNumber(currentRange, 50, 10);
   spr.pushSprite(30, 30);
 
   //Data Display of Loudness
@@ -320,11 +320,12 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
           strip.setPixelColor(k, ledStickColors[2]);
         }
         strip.show();
-        delay(150);
+        flashSHHH();
+        delay(100);
         strip.clear();
         strip.show();
-        delay(150);
-        }
+        delay(100);
+        }resetScreen();
     }
     }
   strip.show();
