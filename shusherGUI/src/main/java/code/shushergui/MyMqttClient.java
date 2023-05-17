@@ -17,10 +17,6 @@ public class MyMqttClient {
         mqttClient.connect(options);
     }
 
-    public void disconnect()throws MqttException {
-        mqttClient.disconnect();
-    }
-
     // Publish function, takes topic and message as argument. Publishes a payload that is converted to a byte array
     public void publish(String topic, String payload) throws MqttException {
         MqttMessage message = new MqttMessage(payload.getBytes());

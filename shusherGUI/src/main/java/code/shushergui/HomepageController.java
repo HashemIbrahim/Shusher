@@ -15,11 +15,12 @@ import org.eclipse.paho.client.mqttv3.*;
 public class HomepageController {
     private Stage stage;
     private MyMqttClient mqttClient;
-
     private String counterValue;
     private String [] lightTheme = {"#AAFF00", "#FFEA00", "#EE4B2B"};   // Default light theme colors
 
-    //  Annotate variables used in SceneBuilder with @FXML
+    private final String BACKGROUND_COLOR = "-fx-background-color:";
+
+    // Annotate variables used in SceneBuilder with @FXML
     @FXML
     private StackPane light1, light2, light3, light4, light5, light6, light7, light8, light9, light10;
     @FXML
@@ -44,11 +45,7 @@ public class HomepageController {
     public void setMqttClient(MyMqttClient mqttClient) {
         if (mqttClient != null) {
             this.mqttClient = mqttClient;
-            System.out.println("Successfully passed mqtt instance to homepageController");
-            // Run 'runMqtt' function
             runMqtt();
-        } else {
-            System.out.println("ERROR: mqttClient object is null in homepage");
         }
     }
 
@@ -64,21 +61,14 @@ public class HomepageController {
         stage = (Stage)settingsButton.getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load(), 500, 300);
 
-        // Add css file to the scene
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());   // Add css file to the scene
 
-        // Pass the MqttClient instance to the settingsPage controller
-        SettingsPageController settingsPageController = fxmlLoader.getController();
-        settingsPageController.setMqttClient(mqttClient);
-
-        // Pass threshold label text to SettingsPageController and select threshold button
-        settingsPageController.setThreshold(thresholdLabel.getText());
-
-        // Pass the current light theme to SettingsPageController
-        settingsPageController.setLightTheme(lightTheme);
-
-        // Pass the counter value to SettingsPageController
-        settingsPageController.setCounterValue(counterValue);
+        // Pass variables to SettingsPageController by calling setters through forwarding
+        SettingsPageController settingsPageController = fxmlLoader.getController();     // Load SettingsPageController
+        settingsPageController.setMqttClient(mqttClient);                               // Pass the MqttClient instance to the settingsPage controller
+        settingsPageController.setThreshold(thresholdLabel.getText());                  // Pass threshold label text to SettingsPageController and select threshold button
+        settingsPageController.setLightTheme(lightTheme);                               // Pass the current light theme to SettingsPageController
+        settingsPageController.setCounterValue(counterValue);                           // Pass the counter value to SettingsPageController
 
         // Set the window and display scene
         stage.setScene(scene);
@@ -88,33 +78,36 @@ public class HomepageController {
 
     // Add MQTT function, subscribe to topics and perform actions on incoming payload
     private void runMqtt() {
+        // Create immutable objects by setting topic attributes as final constants
+        final String LOUDNESS_TOPIC = "shusher/loudness";
+        final String LOUDNESS_COUNTER_TOPIC = "shusher/loudness/counter";
+        final String DISTANCE_TOPIC = "shusher/distance";
+
         if (mqttClient != null) {
             try {
-                mqttClient.subscribe("shusher/loudness");
-                mqttClient.subscribe("shusher/distance");
-                mqttClient.subscribe("shusher/loudness/counter");
+                mqttClient.subscribe(LOUDNESS_TOPIC);
+                mqttClient.subscribe(DISTANCE_TOPIC);
+                mqttClient.subscribe(LOUDNESS_COUNTER_TOPIC);
                     // Set the callback function for arriving messages.
                     mqttClient.setCallback(new MqttCallback() {
                         @Override
-                        public void connectionLost(Throwable throwable) {
-                            System.out.println("Connection lost: " + throwable.getMessage());
-                        }
+                        public void connectionLost(Throwable throwable) {System.out.println("Connection lost: " + throwable.getMessage());}
                         @Override
                         public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
                             Platform.runLater(() -> {       // updates the UI from a background thread
-                                if (topic.equals("shusher/loudness")) {
+                                if (topic.equals(LOUDNESS_TOPIC)) {
                                     int payload = Integer.parseInt(new String(mqttMessage.getPayload()));       // Parse incoming payload into integer
                                     // Call function to reset the background color of all lights
                                     resetLights();
                                     // Call function to set color of lights depending on the payload
                                     setLightsOnPayload(payload);
                                 }
-                                String payload = new String(mqttMessage.getPayload());                      // Parse incoming payload into String
-                                if (topic.equals("shusher/distance")) {
+                                String payload = new String(mqttMessage.getPayload());      // Parse incoming payload into String
+                                if (topic.equals(DISTANCE_TOPIC)) {
                                     // Call function to update the distance label on incoming payload
                                     displayDistance(payload);
                                 }
-                                if (topic.equals("shusher/loudness/counter")){
+                                if (topic.equals(LOUDNESS_COUNTER_TOPIC)){
                                     // Call function to set counter label on incoming payload
                                     updateCounter(payload);
                                     counterValue = payload;
@@ -128,25 +121,24 @@ public class HomepageController {
             } catch (MqttException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println("ERROR: mqttClient object is null");
         }
     }
 
-    // ChatGPT helped me create this loop. I believe it is a good solution because:
+    // ChatGPT helped create this loop. It is a good solution because:
     // - It uses get.Parent() to get the HBox object which enables the use of the lookup() method.
     // - It efficiently uses the lookup() method to find nodes.
     // - It is shorter than having 10 lines of setting the background color of all lights.
     private void resetLights() {
-        HBox ledStrip = (HBox) light1.getParent();                  // Store HBox object in ledStrip variable
-        for (int i = 1; i <= 10; i++) {                             // Loop through lights
+        HBox ledStrip = (HBox) light1.getParent();      // Store HBox object in ledStrip variable
+        for (int i = 1; i <= 10; i++) {                 // Loop through lights
             String lightId = "light" + i;
             // Use lookup() method to find the node with the given lightId. The '#' is used to identify the elements id in CSS.
             // When passing a string that start with '#' to lookup(), it will search for a node with the given id in the scene.
             Node light = ledStrip.lookup("#" + lightId);
-            light.setStyle("-fx-background-color: #202020");
+            light.setStyle(BACKGROUND_COLOR + "#202020");
         }
     }
+
     // Set the background color of the lights that should light up on a given payload.
     private void setLightsOnPayload(int payload) {
         HBox ledStrip = (HBox) light1.getParent();                          // Store HBox object in ledStrip variable
@@ -154,11 +146,11 @@ public class HomepageController {
             String lightId = "light" + i;
             Node light = ledStrip.lookup("#" + lightId);
             if (i <= 3) {
-                light.setStyle("-fx-background-color:" + lightTheme[0]);    // Light 1-3
+                light.setStyle(BACKGROUND_COLOR + lightTheme[0]);    // Light 1-3
             } else if (i <= 7) {
-                light.setStyle("-fx-background-color:" + lightTheme[1]);    // Light 4-7
+                light.setStyle(BACKGROUND_COLOR + lightTheme[1]);    // Light 4-7
             } else {
-                light.setStyle("-fx-background-color:" + lightTheme[2]);    // Light 8-10
+                light.setStyle(BACKGROUND_COLOR + lightTheme[2]);    // Light 8-10
             }
         }
     }
@@ -178,7 +170,6 @@ public class HomepageController {
     private void exitApp() {
         stage = (Stage)exitButton.getScene().getWindow();   // Get stage
         stage.close();                                      // Close stage
-        System.out.println("Application closed");
     }
 
 }
