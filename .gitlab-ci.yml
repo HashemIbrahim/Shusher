@@ -1,0 +1,26 @@
+image: latest
+
+stages:
+    - package
+    - deploy
+
+package-job:
+    stage: package
+    tags: 
+        - docker
+    
+    script:
+        - echo "Maven build started"
+        - "mvn -f shusherGUI clean package"
+        - echo "Maven build finished"
+
+deploy-job:
+    stage: deploy
+    tags:
+        - docker
+        - deployment
+    
+    script:
+        - echo "Maven deployment started"
+        - "mvn clean deploy"
+        - echo "Maven deployed"
