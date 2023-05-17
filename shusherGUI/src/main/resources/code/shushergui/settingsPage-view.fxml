@@ -1,13 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
-
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.SettingsPageController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" style="-fx-background-color: #282828;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.SettingsPageController">
    <children>
-      <Label layoutX="279.0" layoutY="27.0" text="Settings" />
-      <Button layoutX="237.0" layoutY="188.0" mnemonicParsing="false" onAction="#switchToHomepage" text="Switch to Homepage" />
+      <Button fx:id="setupButton" layoutX="325.0" layoutY="207.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="125.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Setup" textFill="PALEGREEN">
+         <font>
+            <Font name="OCR A Extended" size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="homepageButton" layoutX="325.0" layoutY="112.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToHomepage" prefHeight="50.0" prefWidth="125.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Homepage" textFill="PALEGREEN">
+         <font>
+            <Font name="OCR A Extended" size="16.0" />
+         </font></Button>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="35.0" layoutX="50.0" layoutY="33.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="400.0" />
+      <Label layoutX="197.0" layoutY="39.0" text="Settings" textFill="PALEGREEN">
+         <font>
+            <Font name="OCR A Extended" size="22.0" />
+         </font>
+      </Label>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="50.0" layoutY="109.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
+      <Label layoutX="54.0" layoutY="117.0" text="Set Threshold" textFill="#cf9fff">
+         <font>
+            <Font name="OCR A Extended" size="15.0" />
+         </font>
+      </Label>
+      <VBox alignment="CENTER" layoutX="69.0" layoutY="144.0" prefHeight="93.0" prefWidth="88.0">
+         <children>
+            <RadioButton fx:id="highThresholdButton" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" text="High" textAlignment="CENTER" textFill="PALEGREEN">
+               <font>
+                  <Font name="OCR A Extended" size="12.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="-1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <toggleGroup>
+                  <ToggleGroup fx:id="thresholdGroup" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="mediumThresholdButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" text="Medium" textAlignment="CENTER" textFill="PALEGREEN" toggleGroup="$thresholdGroup">
+               <font>
+                  <Font name="OCR A Extended" size="12.0" />
+               </font>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               </RadioButton>
+            <RadioButton fx:id="lowThresholdButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" text="Low" textAlignment="CENTER" textFill="PALEGREEN" toggleGroup="$thresholdGroup">
+               <font>
+                  <Font name="OCR A Extended" size="12.0" />
+               </font>
+               <VBox.margin>
+                  <Insets top="-1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding></RadioButton>
+         </children>
+      </VBox>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="187.0" layoutY="109.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
+      <Label layoutX="200.0" layoutY="117.0" text="Light theme" textFill="#cf9fff">
+         <font>
+            <Font name="OCR A Extended" size="15.0" />
+         </font>
+      </Label>
+      <VBox alignment="CENTER" layoutX="206.0" layoutY="144.0" prefHeight="93.0" prefWidth="88.0">
+         <children>
+            <RadioButton fx:id="partyTheme" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" textFill="#98fa98">
+               <VBox.margin>
+                  <Insets bottom="-1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <toggleGroup>
+                  <ToggleGroup fx:id="lightGroup" />
+               </toggleGroup>
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text fill="AQUA" strokeType="OUTSIDE" strokeWidth="0.0" text="Pa">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="ORCHID" strokeType="OUTSIDE" strokeWidth="0.0" text="rt">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="YELLOW" strokeType="OUTSIDE" strokeWidth="0.0" text="y">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="3.0" />
+                     </padding>
+                  </HBox>
+               </graphic>
+            </RadioButton>
+            <RadioButton fx:id="darkTheme" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" toggleGroup="$lightGroup">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text fill="#0047ab" strokeType="OUTSIDE" strokeWidth="0.0" text="D">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="#880808" strokeType="OUTSIDE" strokeWidth="0.0" text="ar">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="PURPLE" strokeType="OUTSIDE" strokeWidth="0.0" text="k">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="3.0" />
+                     </padding>
+                  </HBox>
+               </graphic>
+            </RadioButton>
+            <RadioButton fx:id="defaultTheme" mnemonicParsing="false" prefHeight="31.0" prefWidth="88.0" style="-fx-border-color: #CF9FFF;" toggleGroup="$lightGroup">
+               <VBox.margin>
+                  <Insets top="-1.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Text fill="#aaff00" strokeType="OUTSIDE" strokeWidth="0.0" text="De">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="#ffea00" strokeType="OUTSIDE" strokeWidth="0.0" text="fau">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="#ee4b2b" strokeType="OUTSIDE" strokeWidth="0.0" text="lt">
+                           <font>
+                              <Font name="OCR A Extended" size="12.0" />
+                           </font>
+                        </Text>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="3.0" />
+                     </padding>
+                  </HBox>
+               </graphic>
+            </RadioButton>
+         </children>
+      </VBox>
    </children>
 </Pane>
