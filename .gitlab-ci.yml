@@ -17,7 +17,6 @@ package-job:
 deploy-job:
     stage: deploy
     tags:
-        - docker
         - deployment
     
     script:
