@@ -272,25 +272,21 @@ void displayDataSPRMika(){
   spr.drawNumber(loudnessMaxReachedCount, 110, 0);
   spr.pushSprite(-100, 200);
 
-  /*if(loudness >= 8){
-    spr.setFreeFont(&FreeSansBold18pt7b);
-    for(int i = 0; i<4 ; i++){
+  for(int i = 0; i<4 ; i++){
     spr.deleteSprite();
     spr.createSprite(320, 240);
     spr.fillSprite(TFT_RED);
     spr.setTextColor(TFT_BLACK, TFT_RED);
-    spr.drawString("SHHHHHHHH", 160, 120);
+    spr.drawString("SHHHHHHHHHHHHH", 30, 120);
     spr.pushSprite(0, 0);
-    delay(100);
+    delay(400);
     spr.fillSprite(TFT_BLACK);
     spr.setTextColor(TFT_RED, TFT_BLACK);
-    spr.drawString("SHHHHHHHH", 160, 120);
+    spr.drawString("SHHHHHHHHHHHHH", 30, 120);
     spr.pushSprite(0,0);
-    delay(100);
+    delay(400);
     }
-  } */
-
-}
+  } 
 
 // RGB LED Stick Functions
 void ledStartupTest(){    // Testing that all LEDs work(LightShow ;) )
