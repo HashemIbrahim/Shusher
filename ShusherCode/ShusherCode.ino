@@ -15,7 +15,7 @@ PubSubClient client(wioClient);
 #define DEBUGSERIAL
 #define DEBUGPRINTING
 #define DEBUGWIFI
-//#define DEBUGMQTT
+#define DEBUGMQTT
 int const ranges[] = { 15, 40, 60, 75, 100 };
 float const sensvalues[] = { 1, 1.75, 2, 2.35, 2.8, 3.3 };
 //---------------------------------------------------------------------------------
@@ -189,7 +189,9 @@ void LoudnessSensorLoudValue() {
 
     loudness = 10;
     loudnessMaxReachedCount++;  // adds one to a count of how many times the max threshold was reached
-    client.publish("shusher/loudness/counter", loudnessMaxReachedCount);
+    const char* counter = String(loudnessMaxReachedCount).c_str();
+    Serial.println(counter);
+    client.publish("shusher/loudness/counter", counter);
   }
 }
 
