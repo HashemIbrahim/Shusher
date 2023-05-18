@@ -6,6 +6,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MainApplication extends Application {
 
@@ -15,11 +18,24 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException, MqttException {
         // Create a try catch block that creates an instance of MyMqttClient if the instance connects to MQTT, otherwise the MQTT instance is null
         // Enable the application to run even if the application is not connected to mqtt.
+        // Read broker and clientId from configuration file
         try {
-            mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
+            Path configFilePath = Paths.get("C:\\Users\\isaac\\OneDrive\\Skrivbord\\shusherConf.txt");
+            // Read the contents of the file
+            String configContent = Files.readString(configFilePath);
+            // Parse the contents to extract the broker and clientId
+            String[] configLines = configContent.split("\n");
+            String broker = configLines[0].trim();
+            String clientId = configLines[1].trim();
+
+            mqttClient = new MyMqttClient(broker, clientId);
             mqttClient.connect();
+        } catch (IOException e) {
+            // Handle file reading error
+            e.printStackTrace();
         } catch (MqttException e) {
             mqttClient = null;
+            e.printStackTrace();
         }
 
         // Load homepage from fxml file

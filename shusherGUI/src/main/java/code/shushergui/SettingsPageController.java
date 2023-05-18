@@ -94,8 +94,16 @@ public class SettingsPageController {
         defaultTheme.setOnAction( e -> changeLightTheme(defaultTheme, lightTheme = new String[] {"#AAFF00", "#FFEA00", "#EE4B2B"}));
         darkTheme.setOnAction( e -> changeLightTheme(darkTheme, lightTheme = new String[] {"#0047AB", "#880808", "#800080"}));
         partyTheme.setOnAction( e -> changeLightTheme(partyTheme, lightTheme = new String[] {"#00FFFF", "#DA70D6", "#FFFF00"}));
-    }
 
+        // Setup button, call display from SetupPage
+        setupButton.setOnAction( e -> {
+            try {
+                SetupPage.display();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
     // Publish payload to "shusher/threshold" topic when thresholdButtons are clicked
     @FXML
     private void thresholdButtons(RadioButton button, String threshold) {
@@ -122,6 +130,7 @@ public class SettingsPageController {
         final String LIGHT_SECTION_1_TOPIC = "shusher/lights/section1";
         final String LIGHT_SECTION_2_TOPIC = "shusher/lights/section2";
         final String LIGHT_SECTION_3_TOPIC = "shusher/lights/section3";
+        final String LIGHT_THEME_TOPIC = "shusher/lights/theme";
 
         try {
             switch (button.getId()) {
@@ -129,21 +138,25 @@ public class SettingsPageController {
                     mqttClient.publish(LIGHT_SECTION_1_TOPIC, "FF0000");        // green
                     mqttClient.publish(LIGHT_SECTION_2_TOPIC, "FFFF00");        // yellow
                     mqttClient.publish(LIGHT_SECTION_3_TOPIC, "00FF00");        // red
+                    mqttClient.publish(LIGHT_THEME_TOPIC, "defaultTheme");      // publish defaultTheme
                 }
                 case "darkTheme" -> {
                     mqttClient.publish(LIGHT_SECTION_1_TOPIC, "00008B");        // blue
                     mqttClient.publish(LIGHT_SECTION_2_TOPIC, "008B00");        // dark red
                     mqttClient.publish(LIGHT_SECTION_3_TOPIC, "00FFFF");        // purple
+                    mqttClient.publish(LIGHT_THEME_TOPIC, "darkTheme");
                 }
                 case "partyTheme" -> {
                     mqttClient.publish(LIGHT_SECTION_1_TOPIC, "FF10F0");        // bright blue
                     mqttClient.publish(LIGHT_SECTION_2_TOPIC, "008080");        // bright purple
                     mqttClient.publish(LIGHT_SECTION_3_TOPIC, "FFFF00");        // yellow
+                    mqttClient.publish(LIGHT_THEME_TOPIC, "partyTheme");
                 }
             }
         } catch (MqttException e) {
             throw new RuntimeException(e);
         }
     }
+
 
 }
