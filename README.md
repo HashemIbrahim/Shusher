@@ -86,7 +86,7 @@ nclude a section on the main contributions per team member. You can list how eac
 
 A standing ovation to the following board members who all contributed in their respective ways on every sprint delivery and the final product with special mentions to:
 - Mika Rannisto:
-  For designing and implementing the Wio gui, setting up automated build and CI/CD. Helping with ultrasonic ranger code and refactoring. Doing crucial work on connecting sensors and merging files.
+  For designing and implementing the Wio gui, setting up automated build and CI/CD. Helping with ultrasonic ranger code and refactoring. Doing crucial work on connecting sensors and merging files. User manual and ReadMe text contributions as well. 
 - Hashem Ibrahim:
   For implementing the functionality of inputting data from the wio mic and recording sound, converting it into usable values to display and be used around the code and implementing ultrasonic ranger functionality. Doing minor work on a wio gui MVP. Doing major work on backend structuring, debugging and modularisation.
 - Johan Engstrom:
