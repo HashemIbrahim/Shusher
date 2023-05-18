@@ -27,6 +27,7 @@ Ultrasonic ultrasonic(2);
 #define LOOP_PERIOD 1
 TFT_eSPI tft;
 TFT_eSprite spr = TFT_eSprite(&tft);
+uint32_t thematicColors[] = {TFT_DARKGREEN, TFT_BLACK, TFT_PURPLE};
 //--Setting variables--------------------------------------------------------------
 int loudness;
 int loudnessMaxReachedCount;
@@ -43,7 +44,7 @@ float decibels;
 #define DATA_PIN 0
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
 
-uint32_t ledStickColors[] = {0xFF0000, 0xFFFF00, 0x00FF00 };
+uint32_t ledStickColors[] = { 0xFF0000, 0xFFFF00, 0x00FF00 };
 
 //----------------------------------------------------------------------
 const char* TOPIC_sub1 = "shusher/threshold";
@@ -63,6 +64,7 @@ void loop() {
   LoudnessSensorLoudValue();
   displayDataSPRMika();
   setLedStick();
+  client.loop();
 #ifdef DEBUGMQTT
   if (!client.connected()) {
     reconnect();
@@ -78,7 +80,7 @@ void setupScreen() {
 void setupWIFI() {  //connects to the wifi
 #ifdef DEBUGWIFI
   WiFi.begin(ssid, password);
-  client.setServer(server,1883);
+  client.setServer(server, 1883);
   client.setCallback(callback);
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
@@ -96,21 +98,28 @@ void setupMic() {  //sets what to use as the mic
   pinMode(WIO_MIC, INPUT);
 }
 void ThresholdCalculator() {
-  currentRange = rangeFinder(); //gets the range from the ranger right now
+  currentRange = rangeFinder();  //gets the range from the ranger right now
   //---MQTT-------------------------------------------------------------------------------------------------------
-  const char* currentDistance = String(currentRange).c_str();         // converts the integer into a const char*, this is necessary for the publish method to work
-  client.publish("shusher/distance", currentDistance);                //published the currentDistance via MQTT with the topic "shusher/distance" 
+  const char* currentDistance = String(currentRange).c_str();  // converts the integer into a const char*, this is necessary for the publish method to work
+  client.publish("shusher/distance", currentDistance);         //published the currentDistance via MQTT with the topic "shusher/distance"
   //-----------------------------------------------------------------------------------------------------------
   //calulates what the sensitivity should be based on that range
-  if (currentRange < ranges[0] ) {Sens=sensvalues[5];}
-  else if (currentRange >= ranges[0] && currentRange < ranges[1]) {Sens=sensvalues[4];}
-  else if ((currentRange >= ranges[1] && currentRange < ranges[2]) ) {Sens=sensvalues[3];}
-  else if (currentRange >= ranges[2] && currentRange < ranges[3] ) {Sens=sensvalues[2];}
-  else if (currentRange >= ranges[3] && currentRange < ranges[4]) {Sens=sensvalues[1];}
-  else if (currentRange >= ranges[4]) {Sens=sensvalues[0];}
-  
-  // printing for debugging
-  #ifdef DEBUGPRINTING
+  if (currentRange < ranges[0]) {
+    Sens = sensvalues[5];
+  } else if (currentRange >= ranges[0] && currentRange < ranges[1]) {
+    Sens = sensvalues[4];
+  } else if ((currentRange >= ranges[1] && currentRange < ranges[2])) {
+    Sens = sensvalues[3];
+  } else if (currentRange >= ranges[2] && currentRange < ranges[3]) {
+    Sens = sensvalues[2];
+  } else if (currentRange >= ranges[3] && currentRange < ranges[4]) {
+    Sens = sensvalues[1];
+  } else if (currentRange >= ranges[4]) {
+    Sens = sensvalues[0];
+  }
+
+// printing for debugging
+#ifdef DEBUGPRINTING
   for (int i = 0; i < 10; i++) {
     Serial.print(Thresholds[i]);  // print the value of the current element
     Serial.print(" ");            // add a space to separate values
@@ -156,7 +165,6 @@ void LoudnessSensorLoudValue() {
 #endif
 
   // based on the decibel a loudness value is assigned and published to mqtt
-
   if (decibels <= Thresholds[0]) {
     (loudness = 1);
     client.publish("shusher/loudness", "1");
@@ -206,8 +214,8 @@ int rangeFinder() {
 void displayDataSPRMika() {
   //Data Display of Ultrasonic Ranger
   spr.createSprite(165, 40);
-  spr.fillSprite(TFT_DARKGREEN);
-  spr.setTextColor(TFT_WHITE, TFT_DARKGREEN);
+  spr.fillSprite(thematicColors[0]);
+  spr.setTextColor(TFT_WHITE, thematicColors[0]);
   spr.setFreeFont(&FreeSansBold9pt7b);
   spr.drawString("cm", 120, 20);
   spr.setFreeFont(&FreeSansBold18pt7b);
@@ -215,8 +223,8 @@ void displayDataSPRMika() {
   spr.pushSprite(30, 30);
 
   //Data Display of Loudness
-  spr.fillSprite(TFT_BLACK);
-  spr.setTextColor(TFT_WHITE, TFT_BLACK);
+  spr.fillSprite(thematicColors[1]);
+  spr.setTextColor(TFT_WHITE, thematicColors[1]);
   spr.setFreeFont(&FreeSansBold9pt7b);
   spr.drawString("Vol", 120, 20);
   spr.setFreeFont(&FreeSansBold18pt7b);
@@ -224,25 +232,25 @@ void displayDataSPRMika() {
   spr.pushSprite(125, 170);
 
   //Data display of boundary breaks
-  spr.fillSprite(TFT_PURPLE);
-  spr.setTextColor(TFT_WHITE, TFT_PURPLE);
+  spr.fillSprite(thematicColors[2]);
+  spr.setTextColor(TFT_WHITE, thematicColors[2]);
   spr.drawNumber(loudnessMaxReachedCount, 110, 0);
   spr.pushSprite(-100, 200);
 }
 
 void resetScreen() {
-  tft.fillTriangle(0, 0, 0, 240, 320, 0, TFT_BLACK);
-  tft.fillTriangle(320, 0, 0, 240, 320, 240, TFT_DARKGREEN);
-  tft.fillCircle(0, 240, 100, TFT_PURPLE);
+  tft.fillTriangle(0, 0, 0, 240, 320, 0, thematicColors[1]);
+  tft.fillTriangle(320, 0, 0, 240, 320, 240, thematicColors[0]);
+  tft.fillCircle(0, 240, 100, thematicColors[2]);
 
   //Data Table Setting
-  tft.fillRect(25, 25, 175, 50, TFT_PURPLE);
-  tft.fillRect(120, 165, 175, 50, TFT_PURPLE);
+  tft.fillRect(25, 25, 175, 50, thematicColors[2]);
+  tft.fillRect(120, 165, 175, 50, thematicColors[2]);
 
   //Max Boundary Breaks Setting
   tft.setFreeFont(&FreeSansBold9pt7b);
   tft.setTextSize(0.4);
-  tft.setTextColor(TFT_WHITE, TFT_PURPLE);
+  tft.setTextColor(TFT_WHITE, thematicColors[2]);
   tft.drawString("Breaks:", 5, 170);
 
   //Logo display
@@ -269,23 +277,21 @@ void flashSHHH() {
 void ledStartupTest() {  // Testing that all LEDs work(LightShow ;) )
   strip.begin();
   strip.setBrightness(brightnesslevellights);
-  strip.clear(); 
-  for(int i= 0; i<=NUM_LEDS;i++){
+  strip.clear();
+  for (int i = 0; i <= NUM_LEDS; i++) {
     delay(100);
-    if(i<3){
-    strip.setPixelColor(i, ledStickColors[0]);       //setting the color of led number 1-3 to green
-    
-  }
-    else if(i<7){
-    strip.setPixelColor(i,ledStickColors[1]);    //setting the color of led number 4-7 yellow
-  }
+    if (i < 3) {
+      strip.setPixelColor(i, ledStickColors[0]);  //setting the color of led number 1-3 to green
 
-    else if(i<10) {
-    strip.setPixelColor(i,ledStickColors[2]);       //Setting the color of LED number 8-9 red
-  }
-    else if(i== 10){                      //the whole Stick flashes red when the last LED is reached.
-       for(int j = 0; j < 5; j++){
-        for(int k = 0; k < NUM_LEDS; k++){
+    } else if (i < 7) {
+      strip.setPixelColor(i, ledStickColors[1]);  //setting the color of led number 4-7 yellow
+    }
+
+    else if (i < 10) {
+      strip.setPixelColor(i, ledStickColors[2]);  //Setting the color of LED number 8-9 red
+    } else if (i == 10) {                         //the whole Stick flashes red when the last LED is reached.
+      for (int j = 0; j < 5; j++) {
+        for (int k = 0; k < NUM_LEDS; k++) {
           strip.setPixelColor(k, ledStickColors[2]);
         }
         strip.show();
@@ -293,7 +299,7 @@ void ledStartupTest() {  // Testing that all LEDs work(LightShow ;) )
         strip.clear();
         strip.show();
         delay(150);
-        }
+      }
     }
     delay(150);
     strip.show();
@@ -301,22 +307,20 @@ void ledStartupTest() {  // Testing that all LEDs work(LightShow ;) )
   strip.clear();
 }
 
-
-
-void setLedStick(){                 //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top. 
-  for(int i = 0; i < loudness; i++){
-      if(i <= 2){
+void setLedStick() {  //Activating the LEDs dependent on the loudness which is determined by the thresholds set at the top.
+  for (int i = 0; i < loudness; i++) {
+    if (i <= 2) {
       strip.setPixelColor(i, ledStickColors[0]);
-      }
-      if(i > 2 && i <7){
-      strip.setPixelColor(i,ledStickColors[1]);
-      }
-      if(i>=7){
+    }
+    if (i > 2 && i < 7) {
+      strip.setPixelColor(i, ledStickColors[1]);
+    }
+    if (i >= 7) {
       strip.setPixelColor(i, ledStickColors[2]);
-      }
-      if (i >= 9){ 
-      for(int j = 0; j < 3; j++){
-        for(int k = 0; k < NUM_LEDS; k++){
+    }
+    if (i >= 9) {
+      for (int j = 0; j < 3; j++) {
+        for (int k = 0; k < NUM_LEDS; k++) {
           strip.setPixelColor(k, ledStickColors[2]);
         }
         strip.show();
@@ -325,14 +329,15 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
         strip.clear();
         strip.show();
         delay(100);
-        }resetScreen();
+      }
+      resetScreen();
     }
-    }
+  }
   strip.show();
   strip.clear();
-  }
+}
 
-  void reconnect() {                                                  // method is taken fron the MQTT workshop
+void reconnect() {  // method is taken fron the MQTT workshop
   // Loop until we're reconnected
   while (!client.connected()) {
     Serial.println("Attempting MQTT connection...");
@@ -361,68 +366,74 @@ void setLedStick(){                 //Activating the LEDs dependent on the loudn
 
 //--MQTT--------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
-  //This function is called when a message over mqtt is recieved 
-  void callback(char* topic, byte* payload, unsigned int length){
+//This function is called when a message over mqtt is recieved
+void callback(char* topic, byte* payload, unsigned int length) {
 
-    Serial.print("Message recieved on topic ");
-    Serial.println(topic);
+  Serial.print("Message recieved on topic ");
+  Serial.println(topic);
 
-    String message;
-    for(int i = 0; i<length; i++){   //iterates through the payload converting it from byte to a string
+  String message;
+  for (int i = 0; i < length; i++) {  //iterates through the payload converting it from byte to a string
     message += (char)payload[i];
-    }
-    Serial.print("Message payload: ");
-    Serial.println(message);
-
-  if(strcmp(topic, "shusher/threshold") == 0){ //checks if the topic is "shusher/threshold"
-    changeThreshold(message);               // if it is, call the changeThreshold cunction
-    Serial.print(message);
   }
-  else if (strstr(topic, "shusher/lights/") != NULL){  // check if the topic contains "shusher/lights/". strstr checks if the given string is a substring of the topic.
-    char* section = topic + strlen("shusher/colors/"); // extracts the section from the topic string by moving the pointer to the first letter of "section"
-    changeLightsTheme(message,section);       //call the changeLightsTheme with the message payload and section as arguments
+  Serial.print("Message payload: ");
+  Serial.println(message);
+
+  if (strcmp(topic, "shusher/threshold") == 0) {  //checks if the topic is "shusher/threshold"
+    changeThreshold(message);                     // if it is, call the changeThreshold cunction
+    Serial.print(message);
+  } else if (strstr(topic, "shusher/lights/") != NULL) {  // check if the topic contains "shusher/lights/". strstr checks if the given string is a substring of the topic.
+    char* section = topic + strlen("shusher/colors/");    // extracts the section from the topic string by moving the pointer to the first letter of "section"
+    changeLightsTheme(message, section);                  //call the changeLightsTheme with the message payload and section as arguments
   }
 }
 
 //this function changes the theme of the LED lights based on the message payload and section
-void changeLightsTheme(String message, char* section){
-    char* endptr;                                             // lines 317,318, 310,309 is recomended by chatgpt, i think strtoul is a good function to use to convert a hexadecimal string becase of the error handling,
+void changeLightsTheme(String message, char* section) {
+  char* endptr;                                               // lines 317,318, 310,309 is recomended by chatgpt, i think strtoul is a good function to use to convert a hexadecimal string becase of the error handling,
                                                               // strlen was a smart way to extract the section from the topic because the whole topic is not needed in the changeLightsTheme
-    uint32_t hexValue = strtoul(message.c_str(), &endptr, 16);// converts the message payload from a hexadecimal string to uint32_t to be able to set the lights with message  
-    Serial.print("Converted value: ");
-    Serial.println(hexValue);
-    if(strcmp(section, "section1") == 0){ //checks if section is "section1"
-      ledStickColors[0] = hexValue; // if it is, set the color of section 1 to the converted value 
-    }
-    else if(strcmp(section, "section2") == 0){
-      ledStickColors[1] = hexValue;
-    }
-    else if(strcmp(section, "section3") == 0){
-      ledStickColors[2] = hexValue;
-    }
-    
+  uint32_t hexValue = strtoul(message.c_str(), &endptr, 16);  // converts the message payload from a hexadecimal string to uint32_t to be able to set the lights with message
+  Serial.print("Converted value: ");
+  Serial.println(hexValue);
+  if (strcmp(section, "section1") == 0) {  //checks if section is "section1"
+    ledStickColors[0] = hexValue;          // if it is, set the color of section 1 to the converted value
+  } else if (strcmp(section, "section2") == 0) {
+    ledStickColors[1] = hexValue;
+  } else if (strcmp(section, "section3") == 0) {
+    ledStickColors[2] = hexValue;
+  }
+  
+  //Checks what theme it is set to
+  if(strcmp(section, "theme") == 0){
+    if(message == "defaultTheme"){
+      thematicColors[0] = TFT_DARKGREEN;
+      thematicColors[1] = TFT_BLACK;
+      thematicColors[2] = TFT_PURPLE;
+    }else if(message == "darkTheme"){
+      thematicColors[0] = TFT_BLUE;
+      thematicColors[1] = TFT_RED;
+      thematicColors[2] = TFT_PURPLE;
+    }else if(message == "partyTheme"){
+      thematicColors[0] = TFT_CYAN;
+      thematicColors[1] = TFT_PINK;
+      thematicColors[2] = TFT_YELLOW;
+    }resetScreen();
+  }
 }
 
 //this function hcanges the baseThreshold based on the message payload.
-void changeThreshold(String message){
-  if (message.equals("High")){        // checks if the message payload equals "High" 
-      Serial.println("baseThreshold is now set to 63"); 
-      baseThreshold = 63;               // if it does, change the baseThreshold to 63.
-    }
-    else if (message.equals("Medium")){ //checks if the message payload equals "Medium"
-      Serial.println("baseThreshold is now set to 56");
-      baseThreshold = 56;             // if it does, change the baseThreshold to 56.
-    }
-    else if(message.equals("Low")){     //checks if the message payload equals "Low"
-      Serial.println("baseThreshold is now set to 49");
-      baseThreshold = 49;             //if it does, change the baseThreshold to 56.
-
-    }
-    Serial.println(message);
+void changeThreshold(String message) {
+  if (message.equals("High")) {  // checks if the message payload equals "High"
+    Serial.println("baseThreshold is now set to 63");
+    baseThreshold = 63;                   // if it does, change the baseThreshold to 63.
+  } else if (message.equals("Medium")) {  //checks if the message payload equals "Medium"
+    Serial.println("baseThreshold is now set to 56");
+    baseThreshold = 56;                // if it does, change the baseThreshold to 56.
+  } else if (message.equals("Low")) {  //checks if the message payload equals "Low"
+    Serial.println("baseThreshold is now set to 49");
+    baseThreshold = 49;  //if it does, change the baseThreshold to 56.
+  }
+  Serial.println(message);
 }
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------

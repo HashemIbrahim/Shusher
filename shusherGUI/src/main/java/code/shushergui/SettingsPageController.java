@@ -137,16 +137,19 @@ public class SettingsPageController {
                     mqttClient.publish("shusher/lights/section1", "FF0000");        // green
                     mqttClient.publish("shusher/lights/section2", "FFFF00");        // yellow
                     mqttClient.publish("shusher/lights/section3", "00FF00");        // red
+                    mqttClient.publish("shusher/lights/theme", "defaultTheme");
                 }
                 case "darkTheme" -> {
                     mqttClient.publish("shusher/lights/section1", "00008B");        // blue
                     mqttClient.publish("shusher/lights/section2", "008B00");        // dark red
                     mqttClient.publish("shusher/lights/section3", "00FFFF");        // purple
+                    mqttClient.publish("shusher/lights/theme", "darkTheme");
                 }
                 case "partyTheme" -> {
                     mqttClient.publish("shusher/lights/section1", "FF10F0");        // bright blue
                     mqttClient.publish("shusher/lights/section2", "008080");        // bright purple
                     mqttClient.publish("shusher/lights/section3", "FFFF00");        // yellow
+                    mqttClient.publish("shusher/lights/theme", "partyTheme");
                 }
             }
         } catch (MqttException e) {
