@@ -5,7 +5,7 @@ Are you susceptible to waking up your neighbours late at night? Do you wish for 
 
 ---
 ## Description
-The **Shusher** visually warns a User for crossing a given decibal threshold. Lights ranging from green to red will display low to high audio levels respectively. This product will also turn on and off automatically at a desired time from a User.
+The **Shusher** visually warns a User for crossing a given noise level threshold. Lights ranging from green to red will display low to high audio levels respectively. This product will also turn on and off automatically at a desired time from a User.
 
 ---
 ## Visuals
@@ -54,7 +54,23 @@ shushercustomerservice@gmail.com
 
 ---
 
+## Video demo 
+
+a link to a Youtube video with a demo of the full functionality of your project
+ 
+- Max 3 minutes. The video will be used in your team's presentation.
+
+- Should showcase the entire functionality of the product.
+
+- Should explain the problem your system solves and its business potential.
+- Include any other technical or otherwise details that you see fit.
+
+---
+
 ## Authors and acknowledgment
+
+nclude a section on the main contributions per team member. You can list how each member contributed to the project
+
 A standing ovation to the following board members
 - Mika Rannisto
 - Hashem Ibrahim
