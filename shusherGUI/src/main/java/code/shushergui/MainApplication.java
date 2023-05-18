@@ -18,9 +18,10 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException, MqttException {
         // Create a try catch block that creates an instance of MyMqttClient if the instance connects to MQTT, otherwise the MQTT instance is null
         // Enable the application to run even if the application is not connected to mqtt.
-        // Read broker and clientId from configuration file
+        // Read broker and clientId from configuration file.
+        // config.txt file below is in the same folder as the executable jar file in release 1.0. If you're not using version 1.0, specify the path to your config file.
         try {
-            Path configFilePath = Paths.get("C:\\Users\\isaac\\OneDrive\\Skrivbord\\shusherConf.txt");
+            Path configFilePath = Paths.get("config.txt");
             // Read the contents of the file
             String configContent = Files.readString(configFilePath);
             // Parse the contents to extract the broker and clientId
