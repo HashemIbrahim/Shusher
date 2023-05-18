@@ -11,10 +11,6 @@ PubSubClient client(wioClient);
 #define sampleWindow 10
 #define peakToPeakAverages 10
 #define brightnesslevellights 20
-#define DEBUGSERIAL
-#define DEBUGPRINTING
-#define DEBUGWIFI
-#define DEBUGMQTT
 int const ranges[] = { 20, 40, 80, 120, 160 };
 float const sensvalues[] = { 1, 2, 2.5, 3, 3.5, 4};
 //---------------------------------------------------------------------------------
@@ -65,11 +61,9 @@ void loop() {
   displayDataSPRMika();
   setLedStick();
   client.loop();
-#ifdef DEBUGMQTT
   if (!client.connected()) {
     reconnect();
   }
-#endif
 }
 //Functions
 void setupScreen() {
@@ -78,20 +72,16 @@ void setupScreen() {
   resetScreen();
 }
 void setupWIFI() {  //connects to the wifi
-#ifdef DEBUGWIFI
   WiFi.begin(ssid, password);
   client.setServer(server, 1883);
   client.setCallback(callback);
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
   }
-#endif
 }
 
 void setupSerial() {  //starts the serial for input
-#ifdef DEBUGSERIAL
   Serial.begin(115200);
-#endif
 }
 
 void setupMic() {  //sets what to use as the mic
@@ -117,15 +107,6 @@ void ThresholdCalculator() {
   } else if (currentRange >= ranges[4]) {
     Sens = sensvalues[0];
   }
-
-// printing for debugging
-#ifdef DEBUGPRINTING
-  for (int i = 0; i < 10; i++) {
-    Serial.print(Thresholds[i]);  // print the value of the current element
-    Serial.print(" ");            // add a space to separate values
-  }
-  Serial.println();
-#endif
 
   //sets the threshold values based on this sensitivity
   for (int i = 0; i < 10; i++) {
@@ -159,10 +140,7 @@ void LoudnessSensorLoudValue() {
   }
   peakToPeak /= peakToPeakAverages;
   decibels = map(peakToPeak, 20, 900, 49.5, 90);  // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
-// printing for debugging
-#ifdef DEBUGPRINTING
-  Serial.println(decibels);
-#endif
+
 
   // based on the decibel a loudness value is assigned and published to mqtt
   if (decibels <= Thresholds[0]) {
@@ -200,7 +178,6 @@ void LoudnessSensorLoudValue() {
     loudness = 10;
     loudnessMaxReachedCount++;  // adds one to a count of how many times the max threshold was reached
     const char* counter = String(loudnessMaxReachedCount).c_str();
-    Serial.println(counter);
     client.publish("shusher/loudness/counter", counter);
   }
 }
@@ -351,9 +328,6 @@ void reconnect() {  // method is taken fron the MQTT workshop
       // ... and resubscribe
       client.subscribe(TOPIC_sub2);
       client.subscribe(TOPIC_sub1);
-      Serial.print("Subcribed to: ");
-      Serial.println(TOPIC_sub1);
-      Serial.println(TOPIC_sub2);
       // Once connected, publish an announcement...
     } else {
       Serial.print("failed, rc=");
@@ -370,19 +344,13 @@ void reconnect() {  // method is taken fron the MQTT workshop
 //This function is called when a message over mqtt is recieved
 void callback(char* topic, byte* payload, unsigned int length) {
 
-  Serial.print("Message recieved on topic ");
-  Serial.println(topic);
-
   String message;
   for (int i = 0; i < length; i++) {  //iterates through the payload converting it from byte to a string
     message += (char)payload[i];
   }
-  Serial.print("Message payload: ");
-  Serial.println(message);
 
   if (strcmp(topic, "shusher/threshold") == 0) {  //checks if the topic is "shusher/threshold"
     changeThreshold(message);                     // if it is, call the changeThreshold cunction
-    Serial.print(message);
   } else if (strstr(topic, "shusher/lights/") != NULL) {  // check if the topic contains "shusher/lights/". strstr checks if the given string is a substring of the topic.
     char* section = topic + strlen("shusher/colors/");    // extracts the section from the topic string by moving the pointer to the first letter of "section"
     changeLightsTheme(message, section);                  //call the changeLightsTheme with the message payload and section as arguments
@@ -394,8 +362,6 @@ void changeLightsTheme(String message, char* section) {
   char* endptr;                                               // lines 317,318, 310,309 is recomended by chatgpt, i think strtoul is a good function to use to convert a hexadecimal string becase of the error handling,
                                                               // strlen was a smart way to extract the section from the topic because the whole topic is not needed in the changeLightsTheme
   uint32_t hexValue = strtoul(message.c_str(), &endptr, 16);  // converts the message payload from a hexadecimal string to uint32_t to be able to set the lights with message
-  Serial.print("Converted value: ");
-  Serial.println(hexValue);
   if (strcmp(section, "section1") == 0) {  //checks if section is "section1"
     ledStickColors[0] = hexValue;          // if it is, set the color of section 1 to the converted value
   } else if (strcmp(section, "section2") == 0) {
@@ -434,7 +400,6 @@ void changeThreshold(String message) {
     Serial.println("baseThreshold is now set to 49");
     baseThreshold = 49;  //if it does, change the baseThreshold to 56.
   }
-  Serial.println(message);
 }
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
