@@ -75,7 +75,8 @@ A standing ovation to the following board members
 - Mika Rannisto
 - Hashem Ibrahim
 - Johan Engstrom
-- Ashor Abraham
+- Ashor Abraham 
+  - Main contributions were: Project management: such as managament of the readme, sprint deliveries, code review rules, and handling merge requests and code reviewing. 
 - Isaac Ternbom
 - Abdullahi Mahamed
 
