@@ -147,7 +147,7 @@ public class SettingsPageController {
                 }
                 case "partyTheme" -> {
                     mqttClient.publish("shusher/lights/section1", "FF10F0");        // bright blue
-                    mqttClient.publish("shusher/lights/section2", "008080");        // bright purple
+                    mqttClient.publish("shusher/lights/section2", "008080");        //[ bright purple
                     mqttClient.publish("shusher/lights/section3", "FFFF00");        // yellow
                     mqttClient.publish("shusher/lights/theme", "partyTheme");
                 }
