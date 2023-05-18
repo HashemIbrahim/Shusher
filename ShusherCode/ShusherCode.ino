@@ -15,8 +15,8 @@ PubSubClient client(wioClient);
 #define DEBUGPRINTING
 #define DEBUGWIFI
 #define DEBUGMQTT
-int const ranges[] = { 15, 40, 60, 75, 100 };
-float const sensvalues[] = { 1, 1.75, 2, 2.35, 2.8, 3.3 };
+int const ranges[] = { 20, 40, 80, 120, 160 };
+float const sensvalues[] = { 1, 2, 2.5, 3, 3.5, 4};
 //---------------------------------------------------------------------------------
 //--Setting the Ranger--------------------------------------------------------------
 Ultrasonic ultrasonic(2);
@@ -339,6 +339,7 @@ void setLedStick() {  //Activating the LEDs dependent on the loudness which is d
 
 void reconnect() {  // method is taken fron the MQTT workshop
   // Loop until we're reconnected
+  setupWIFI();
   while (!client.connected()) {
     Serial.println("Attempting MQTT connection...");
     // Create a random client ID
