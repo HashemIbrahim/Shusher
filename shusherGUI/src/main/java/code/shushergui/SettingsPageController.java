@@ -22,8 +22,6 @@ public class SettingsPageController {
     private Button setupButton, homepageButton;
     @FXML
     private RadioButton highThresholdButton, mediumThresholdButton, lowThresholdButton, defaultTheme, darkTheme, partyTheme;
-    @FXML
-    private ToggleGroup thresholdGroup, lightGroup;
 
     // **Group setter functions at top of class**
 
