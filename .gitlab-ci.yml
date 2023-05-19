@@ -1,0 +1,32 @@
+image: maven:latest
+
+workflow:
+    rules:
+        - if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "main"'
+
+stages:
+    - package
+    - release
+
+package-job:
+    stage: package
+    tags: 
+        - docker
+    
+    script:
+        - echo "Maven build started"
+        - "mvn -f shusherGUI clean package"
+        - echo "Maven build finished"
+
+release-job:
+    stage: release
+
+    script:
+        - echo "Running release job for shusherGUI"
+    release:
+        tag_name: 'v0.$CI_PIPELINE_IID'
+        description: 'v0.$CI_PIPELINE_IID'
+        ref: '$CI_COMMIT_SHA'
+    artifacts:
+        paths:
+            - shusherGUI/shusherGUI-1.0.jar 
