@@ -6,23 +6,37 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MainApplication extends Application {
 
     MyMqttClient mqttClient;
-    Counter counter;
 
     @Override
     public void start(Stage stage) throws IOException, MqttException {
         // Create a try catch block that creates an instance of MyMqttClient if the instance connects to MQTT, otherwise the MQTT instance is null
-        // Enables the application to run even if the application is not connected to mqtt.
+        // Enable the application to run even if the application is not connected to mqtt.
+        // Read broker and clientId from configuration file.
+        // config.txt file below is in the same folder as the executable jar file in release 1.0. If you're not using version 1.0, specify the path to your config file.
         try {
-            mqttClient = new MyMqttClient("tcp://localhost:1883", "shusherApp");
+            Path configFilePath = Paths.get("config.txt");
+            // Read the contents of the file
+            String configContent = Files.readString(configFilePath);
+            // Parse the contents to extract the broker and clientId
+            String[] configLines = configContent.split("\n");
+            String broker = configLines[0].trim();
+            String clientId = configLines[1].trim();
+
+            mqttClient = new MyMqttClient(broker, clientId);
             mqttClient.connect();
-            System.out.println("Connected to MQTT broker");
+        } catch (IOException e) {
+            // Handle file reading error
+            e.printStackTrace();
         } catch (MqttException e) {
             mqttClient = null;
-            System.out.println("Failed to connect to MQTT broker");
+            e.printStackTrace();
         }
 
         // Load homepage from fxml file
@@ -34,13 +48,8 @@ public class MainApplication extends Application {
         // Add css file to the scene
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
-        // Pass MqttClient instance to HomepageController
-        HomepageController homepageController = fxmlLoader.getController();
-        homepageController.setMqttClient(mqttClient);
-
-        // Create an instance of the counter and pass HomepageController
-        counter.getInstance();
-        homepageController.setCounter(counter);
+        HomepageController homepageController = fxmlLoader.getController();         // Load HomePageController
+        homepageController.setMqttClient(mqttClient);                               // Pass MqttClient instance to HomepageController
 
         // Set the window and display scene
         stage.setScene(scene);
