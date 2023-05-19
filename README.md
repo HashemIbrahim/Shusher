@@ -82,8 +82,6 @@ a link to a Youtube video with a demo of the full functionality of your project
 
 ## Authors and acknowledgment
 
-nclude a section on the main contributions per team member. You can list how each member contributed to the project
-
 A standing ovation to the following board members who all contributed in their respective ways on every sprint delivery and the final product with special mentions to:
 - Mika Rannisto:
   For designing and implementing the Wio gui, setting up automated build and CI/CD. Helping with ultrasonic ranger code and refactoring. Doing crucial work on connecting sensors and merging files. User manual and ReadMe text contributions as well. 
