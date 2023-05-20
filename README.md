@@ -68,8 +68,8 @@ There were issues when exporting the application to an executable jar file, ther
 ### Prerequisites
 - Java 17 [Download here](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
 - Eclipse mosquitto [Download here](https://mosquitto.org/download/)
-- Shusher Version 1.0 [Download here]
 - Arduino IDE [Download here](https://www.arduino.cc/en/software)
+- Version 1.0.0
 
 ### System setup
 
