@@ -30,8 +30,7 @@ Are you susceptible to waking up your neighbours late at night? Do you wish for 
 ---
 
 ## Description
-The **Shusher** visually warns a User for crossing a given noise level threshold. Lights ranging from green to red will display low to high audio levels respectively. This product will also turn on and off automatically at a desired time from a User.
-
+The **Shusher** is a device that visually shows a User when they are crossing a given noise level threshold. (Thresholds can be changed in the settings) Lights ranging from green to red (In the default theme) will display low to high audio levels respectively. The sensitivity of the device changes based on how far away you are from it ranging from less sensitive when you are close and more sensitive when you are far away.
 ---
 ## Visuals
 
