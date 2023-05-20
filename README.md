@@ -69,20 +69,9 @@ shushercustomerservice@gmail.com
 ### **1.2** ShusherHome (2032)
 - Added connectivity between **ShusherHome** and house lights (sponsered companies only)
 
-### Further Updates Coming...
-
 ---
 
-## Video demo 
-
-a link to a Youtube video with a demo of the full functionality of your project
- 
-- Max 3 minutes. The video will be used in your team's presentation.
-
-- Should showcase the entire functionality of the product.
-
-- Should explain the problem your system solves and its business potential.
-- Include any other technical or otherwise details that you see fit.
+### Further Updates Coming...
 
 ---
 
