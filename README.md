@@ -2,8 +2,19 @@
 
 ## Table of Contents
 
- - [Shusher Showcase Video](#shusher-showcase-video)
+1. [Shusher Showcase Video](#shusher-showcase-video)
+2. [Introduction](#introduction)
+3. [Description](#description)
+4. [Visuals](#visuals)
+5. [Installation](#installation)
+6. [Purpose](#purpose)
+7. [Benefits](#benefits)
+8. [License](#license)
+9. [Support](#support)
+10. [Roadmap](#roadmap)
+11. [Authors and acknowledgment](authors-and-acknowledgment) 
 
+---
 
 ## Shusher Showcase Video
 
@@ -11,10 +22,13 @@
 
 Click on video above ^^^^
 
+---
+
 ## Introduction
 Are you susceptible to waking up your neighbours late at night? Do you wish for an easy solution to keep your noise levels at a minimum? Well look no further! With the **Shusher**, a technical marvel at voice level detection, will you not only be able to easily visually detect when your noise levels are getting out of hand, but you are also able to say you finally made a worthwhile purchase. 
 
 ---
+
 ## Description
 The **Shusher** visually warns a User for crossing a given noise level threshold. Lights ranging from green to red will display low to high audio levels respectively. This product will also turn on and off automatically at a desired time from a User.
 
@@ -73,10 +87,6 @@ shushercustomerservice@gmail.com
 
 ### **1.2** ShusherHome (2032)
 - Added connectivity between **ShusherHome** and house lights (sponsered companies only)
-
----
-
-### Further Updates Coming...
 
 ---
 
