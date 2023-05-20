@@ -5,14 +5,15 @@
 1. [Shusher Showcase Video](#shusher-showcase-video)
 2. [Introduction](#introduction)
 3. [Description](#description)
-4. [Visuals](#visuals)
-5. [Installation](#installation)
-6. [Purpose](#purpose)
-7. [Benefits](#benefits)
-8. [License](#license)
-9. [Support](#support)
-10. [Roadmap](#roadmap)
-11. [Authors and acknowledgment](#authors-and-acknowledgment) 
+4. [Hardware & Software Architecture](#hardware-&-software-architecture)
+5. [Visuals](#visuals)
+6. [Installation](#installation)
+7. [Purpose](#purpose)
+8. [Benefits](#benefits)
+9. [License](#license)
+10. [Support](#support)
+11. [Roadmap](#roadmap)
+12. [Authors and acknowledgment](#authors-and-acknowledgment) 
 
 ---
 
@@ -33,6 +34,11 @@ Are you susceptible to waking up your neighbours late at night? Do you wish for 
 The **Shusher** is a device that visually shows a User when they are crossing a given noise level threshold. (Thresholds can be changed in the settings) Lights ranging from green to red (In the default theme) will display low to high audio levels respectively. The sensitivity of the device changes based on how far away you are from it ranging from less sensitive when you are close and more sensitive when you are far away.
 
 ---
+
+## Hardware & Software Architecture
+
+---
+
 ## Visuals
 
 ### Shusher detecting audio
