@@ -72,7 +72,7 @@ There were issues when exporting the application to an executable jar file, ther
 ### System setup
 
 #### Step 1: Set up local Eclipse mosquitto message broker
-The system uses a combination of sensors and actuators that communicate with a Java application through MQTT. This system uses the Eclipse Mosquitto message broker. If you have installed and know how to launch your own local message broker, move to step 2.
+The system uses a combination of sensors and actuators that communicate with a Java application through MQTT. This system uses the Eclipse Mosquitto message broker. If you have installed and know how to launch your own local message broker, move to [step 2](#step-2-:-edit-configuration-files).
 - Locate the mosquito directory.
 - Open "mosquitto.conf".
 - Under "General configuration", add two new lines [1] "listener 1883 0.0.0.0", [2] "allow_anonymous true"
