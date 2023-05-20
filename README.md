@@ -53,8 +53,53 @@ The **Shusher** is a device that visually shows a User when they are crossing a 
 ---
 
 ## Installation
->TODO
->>Will have instructions on what programming language to have downloaded and which App to download as well. 
+### Prerequisites
+- Java 17 [Download here](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+- Eclipse mosquitto [Download here](https://mosquitto.org/download/)
+- Shusher Version 1.0 [Download here]
+- Arduino IDE [Download here](https://www.arduino.cc/en/software)
+
+### System setup
+
+#### Step 1: Set up local Eclipse mosquitto message broker
+The system uses a combination of sensors and actuators that communicate with a Java application through MQTT. This system uses the Eclipse Mosquitto message broker. If you have installed and know how to launch your own local message broker, move to step 2.
+- Locate the mosquito directory.
+- Open "mosquitto.conf".
+- Under "General configuration", add two new lines [1] "listener 1883 0.0.0.0", [2] "allow_anonymous true"
+- Open terminal and navigate to the Mosquitto directory.
+- Launch local broker by typing "mosquitto -c mosquitto.conf -v".
+
+#### Step 2: Edit configuration files
+The Shusher device and the application both need to connect to the same network that the local broker is running on. Therefore, configuring your network settings is required to use the application. In the Version1.0 folder, you will find two folders. You need to specify your network settings in both folders. Starting with the "Shusher App" folder:
+- Open "config.txt".
+- The first line indicates your WiFi SSID. Use the default configuration (tcp://localhost:1883) if you're running a local message broker. Otherwise, specify the IP address of the network the broker is connected to instead of "localhost".
+- The second line is the client name of the application. This name will be seen in the message broker.
+
+Moving on to the configuration file inside the "ShusherCode" folder:
+- Plug in the WIO terminal to your computer.
+- Open "shusherCode.ino".
+- Click on the WiFiSetup.h tab.
+- Follow the instructions provided in the file.
+- Compile and upload the program to the WIO terminal.
+
+#### Step 3: Launch application 
+The required configurations are now complete, and the application is ready to launch. To launch the application:
+- Navigate to the Shusher App folder.
+- Launch the application by double-clicking the executable jar file named "ShusherApplication".
+
+#### Common Problems
+> ##### Eclipse mosquitto broker
+> If you receive an error message saying "port already in use" when launching the Eclipse Mosquitto message broker. 
+> - Open terminal as an administrator and type "netstat -ano | findstr "1883"".
+> - Note the numbers after "Listening:"
+> - Type "taskkill /F /PID XXXX". Replace XXXX with the four numbers.
+> - Re-run mosquitto.
+
+> ##### Launching Shusher Application
+> If you can't run the application by double clicking the executable jar file.
+> - Open terminal and navigate to the jar file directory. 
+> - Run "java -jar ShusherApplication.jar" and the application should run.
+> - If you're still having issues launching the application, try downloading Java 17.0.5.
 
 ---
 
