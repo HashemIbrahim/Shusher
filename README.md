@@ -35,8 +35,14 @@ The **Shusher** is a device that visually shows a User when they are crossing a 
 ---
 ## Visuals
 
-### Shusher UI alongside Shusher in action
-![ezgif.com-video-to-gif](/uploads/8901a8f0bf1ce14ba81d035331d3130c/ezgif.com-video-to-gif.gif)
+### Shusher detecting audio
+![ezgif.com-video-to-gif](/uploads/edf9dde10f6efb3528ee197de6780af4/ezgif.com-video-to-gif.gif)
+
+### Shusher changing themes
+![ezgif.com-video-to-gif__1_](/uploads/6cccd9b40bd454f276159119810e86ce/ezgif.com-video-to-gif__1_.gif)
+
+### Shusher alerting that the user is being too loud
+![ezgif.com-video-to-gif__2_](/uploads/0f814d16feb1fee6de77345c28ed1049/ezgif.com-video-to-gif__2_.gif)
 
 ---
 
