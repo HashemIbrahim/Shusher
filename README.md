@@ -1,5 +1,11 @@
 # Shusher
 
+## Shusher Showcase Video
+
+[![Capture](/uploads/65ade24ef1675763dde1934d9db75aa0/Capture.PNG)](https://www.youtube.com/watch?v=n39D97m3lp4)
+
+Click on video above ^^^^
+
 ## Introduction
 Are you susceptible to waking up your neighbours late at night? Do you wish for an easy solution to keep your noise levels at a minimum? Well look no further! With the **Shusher**, a technical marvel at voice level detection, will you not only be able to easily visually detect when your noise levels are getting out of hand, but you are also able to say you finally made a worthwhile purchase. 
 
@@ -42,7 +48,7 @@ This is where the Shusher comes in. Being composed of an ultrasonic ranger, a rg
 
 ## License
 
-[MIT License](https://git.chalmers.se/courses/dit113/2023/group-14/shusher/-/blob/ReadMe-updates/LICENSE)  
+Shusher project is licensed under [MIT](https://git.chalmers.se/courses/dit113/2023/group-14/shusher/-/blob/ReadMe-updates/LICENSE)  
 
 Copyright (c) 2023 courses / DIT113 / 2023 / Group-14
 
