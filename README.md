@@ -40,12 +40,14 @@ Welcome to the hardware and software architecture section of the README. In this
 
 ### System design
 The system diagram illustrates the connections and roles of the different parts of the system. It provides a visual representation of how the hardware components interact with each other and the application to support the functionality of the Shusher system.
+
 ![Image Description](https://previews.dropbox.com/p/thumb/AB5WHdfN3Rwtg4W_NEGv0gKzhxb3kdTlGBqF7AbiXunIV4R812GT5hexzhPvhruD_dGSzForxOSYbQ2GI6mK2GdN6OW6vxrgrWP0LH--4QhWPu23vOFIc7CnRWcGUTbLYG7w0TEBPheVsThALRMb6eXRpL_6hBMGhKVt5AAfsVcKRvCdzLGLMEPMaygxh5E_mxkef68yZr4S9XRLj180gxK-MFtV00b7HF_9vvWB0rPACbVHKMlLnUKk2SWajfnDNXUHFMRMMbPPvjnv3EGVvkde0Pw_HFL3y2igF5VOmq-GIJvewl952ZArTrePwqRmg6NPNk2imubWH4EYItCa9rmZORY_ZG9WmRxG3EdAVXQugvFN1czigPpK7agIR_TbZczJ17kPITRAxHhvZ-I6sst-/p.png)
 
 ### Software Architecture
 The integration of the WIO Terminal and sensors into the system involves the use of the C programming language. By utilizing C, we have been able to establish seamless communication and data exchange between the WIO Terminal and the sensors, ensuring accurate and reliable readings. 
 
 The application itself is built using JavaFX, a framework for creating desktop and mobile applications with a rich user interface. Leveraging capabilities and advantages of scene-builder within JavaFX, we have developed a user-friendly and visually appealing interface for the Shusher application. The software architecture is shown in the class diagram below. This diagram offers a detailed view of the software components, their relationships, and the overall structure of the application.
+
 ![Image Description](https://previews.dropbox.com/p/thumb/AB6X300xSMyMcBhu0Q5H7hSeeIp3kbdGUZfjEa-eQh-_ABfVwdsdEfE0JBmMQR24oLQiHcylk1eUTtrQYRaQL72_NBM56KkqNboUtTQMcMQAxLQMOpJFytyITMA8v_b2usGfcsC3YAkTTTg6YJdciSqkaPNPh2X5dzwWCEN41FVzVHud-Td_JNq4RWBbZ49ARAiy8-wDUsN_27nxjPlvWXj7Vu-VBBxpXPXgLxbZbppqSPlo6v7H9K3KSmeTYKxJ0APB4FWKqkIW472XoI7-M3V0t37rzKwvm5iMTuFBfZMbRIB1OMa6aTpE1ejM0gAjrIxf2_axWWgq_pbHdG-eMbnm-mQXs8RZaKAUKNaXSEuuzf15YIk-szxzCdN7uvG6onNzQcmU6XT3Hk4GuKT2vrje/p.png)
 There were issues when exporting the application to an executable jar file, therefore a 'FakeMain' class was created. The 'FakeMain' class brings no functionality to the system design. It is only used to call the 'MainApplication' class. By having a 'FakeMain', we were able to export the application as an executable jar file and make the program customer friendly.
 
@@ -72,7 +74,7 @@ There were issues when exporting the application to an executable jar file, ther
 ### System setup
 
 #### Step 1: Set up local Eclipse mosquitto message broker
-The system uses a combination of sensors and actuators that communicate with a Java application through MQTT. This system uses the Eclipse Mosquitto message broker. If you have installed and know how to launch your own local message broker, move to [step 2](#step-2-:-edit-configuration-files).
+The system uses a combination of sensors and actuators that communicate with a Java application through MQTT. This system uses the Eclipse Mosquitto message broker. If you have installed and know how to launch your own local message broker, move to step 2.
 - Locate the mosquito directory.
 - Open "mosquitto.conf".
 - Under "General configuration", add two new lines [1] "listener 1883 0.0.0.0", [2] "allow_anonymous true"
