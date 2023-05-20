@@ -6,29 +6,24 @@
 #include "WifiSetup.h"
 WiFiClient wioClient;
 PubSubClient client(wioClient);
-
+//---------------------------------------------------------------------
 //--Setting constants--------------------------------------------------------------
 #define sampleWindow 10
 #define peakToPeakAverages 10
 #define brightnesslevellights 20
-#define DEBUGSERIAL
-#define DEBUGPRINTING
-#define DEBUGWIFI
-#define DEBUGMQTT
-int const ranges[] = { 15, 40, 60, 75, 100 };
-float const sensvalues[] = { 1, 1.75, 2, 2.35, 2.8, 3.3 };
-
-//--Setting the Ranger-------------------------------------------------------------
+int const ranges[] = { 20, 40, 80, 120, 160 };
+float const sensvalues[] = { 1, 2, 2.5, 3, 3.5, 4};
+//---------------------------------------------------------------------------------
+//--Setting the Ranger--------------------------------------------------------------
 Ultrasonic ultrasonic(2);
-
-//--Setting the screen-------------------------------------------------------------
+//---------------------------------------------------------------------------------
+//--Setting the screen--------------------------------------------------------------
 #include "Ultrasonic.h"
 #include "TFT_eSPI.h"
 #define LOOP_PERIOD 1
 TFT_eSPI tft;
 TFT_eSprite spr = TFT_eSprite(&tft);
 uint32_t thematicColors[] = {TFT_DARKGREEN, TFT_BLACK, TFT_PURPLE};
-
 //--Setting variables--------------------------------------------------------------
 int loudness;
 int loudnessMaxReachedCount;
@@ -39,15 +34,15 @@ float Thresholds[10];
 int currentRange;
 float decibels;
 
-// RGB LED Stick-------------------------------------------------------------------
+// RGB LED Stick-------------------------------------------------------
 #include <Adafruit_NeoPixel.h>
 #define NUM_LEDS 10
 #define DATA_PIN 0
 Adafruit_NeoPixel strip(NUM_LEDS, DATA_PIN, NEO_RGB);
+
 uint32_t ledStickColors[] = { 0xFF0000, 0xFFFF00, 0x00FF00 };
 
-//Topics---------------------------------------------------------------------------
-
+//----------------------------------------------------------------------
 const char* TOPIC_sub1 = "shusher/threshold";
 const char* TOPIC_sub2 = "shusher/lights/+";
 const char* TOPIC_pub_connection = "shusher";
@@ -65,13 +60,11 @@ void loop() {
   LoudnessSensorLoudValue();
   displayDataSPRMika();
   setLedStick();
-#ifdef DEBUGMQTT
+  client.loop();
   if (!client.connected()) {
     reconnect();
   }
-#endif
 }
-
 //Functions
 void setupScreen() {
   tft.begin();
@@ -79,20 +72,16 @@ void setupScreen() {
   resetScreen();
 }
 void setupWIFI() {  //connects to the wifi
-#ifdef DEBUGWIFI
   WiFi.begin(ssid, password);
   client.setServer(server, 1883);
   client.setCallback(callback);
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("WiFi not connected");
   }
-#endif
 }
 
 void setupSerial() {  //starts the serial for input
-#ifdef DEBUGSERIAL
   Serial.begin(115200);
-#endif
 }
 
 void setupMic() {  //sets what to use as the mic
@@ -118,15 +107,6 @@ void ThresholdCalculator() {
   } else if (currentRange >= ranges[4]) {
     Sens = sensvalues[0];
   }
-
-// printing for debugging
-#ifdef DEBUGPRINTING
-  for (int i = 0; i < 10; i++) {
-    Serial.print(Thresholds[i]);  // print the value of the current element
-    Serial.print(" ");            // add a space to separate values
-  }
-  Serial.println();
-#endif
 
   //sets the threshold values based on this sensitivity
   for (int i = 0; i < 10; i++) {
@@ -160,39 +140,46 @@ void LoudnessSensorLoudValue() {
   }
   peakToPeak /= peakToPeakAverages;
   decibels = map(peakToPeak, 20, 900, 49.5, 90);  // maps the value to a "decibel" (this value is not entirely accurate and is influenced by the microphone used and its relative sensitivity)
-  // printing for debugging
-  #ifdef DEBUGPRINTING
-  Serial.println(decibels);
-  #endif
+
 
   // based on the decibel a loudness value is assigned and published to mqtt
-
   if (decibels <= Thresholds[0]) {
     (loudness = 1);
+    client.publish("shusher/loudness", "1");
   } else if (decibels > Thresholds[0] && decibels <= Thresholds[1]) {
     (loudness = 2);
+    client.publish("shusher/loudness", "2");
   } else if (decibels > Thresholds[1] && decibels <= Thresholds[2]) {
     (loudness = 3);
+    client.publish("shusher/loudness", "3");
   } else if (decibels > Thresholds[2] && decibels <= Thresholds[3]) {
     (loudness = 4);
+    client.publish("shusher/loudness", "4");
   } else if (decibels > Thresholds[3] && decibels <= Thresholds[4]) {
     (loudness = 5);
+    client.publish("shusher/loudness", "5");
   } else if (decibels > Thresholds[4] && decibels <= Thresholds[5]) {
     (loudness = 6);
+    client.publish("shusher/loudness", "6");
   } else if (decibels > Thresholds[5] && decibels <= Thresholds[6]) {
     (loudness = 7);
+    client.publish("shusher/loudness", "7");
   } else if (decibels > Thresholds[6] && decibels <= Thresholds[7]) {
     (loudness = 8);
+    client.publish("shusher/loudness", "8");
   } else if (decibels > Thresholds[7] && decibels <= Thresholds[8]) {
     (loudness = 9);
+    client.publish("shusher/loudness", "9");
   } else if (decibels > Thresholds[8]) {
+
+    (loudness = 10);
+    client.publish("shusher/loudness", "10");
+
     loudness = 10;
     loudnessMaxReachedCount++;  // adds one to a count of how many times the max threshold was reached
     const char* counter = String(loudnessMaxReachedCount).c_str();
-    Serial.println(counter);
     client.publish("shusher/loudness/counter", counter);
   }
-  client.publish("shusher/loudness", loudness);
 }
 
 // Ultrasonic ranger functionality
@@ -256,11 +243,11 @@ void flashSHHH() {
   tft.setTextColor(TFT_BLACK, TFT_RED);
   tft.setTextSize(3);
   tft.drawString("SHHHHHHHHHHHHH", 0, 100);
-  delay(100);
+  delay(50);
   tft.fillScreen(TFT_BLACK);
   tft.setTextColor(TFT_RED, TFT_BLACK);
   tft.drawString("SHHHHHHHHHHHHH", 0, 100);
-  delay(100);
+  delay(50);
 }
 
 // RGB LED Stick Functions
@@ -315,9 +302,10 @@ void setLedStick() {  //Activating the LEDs dependent on the loudness which is d
         }
         strip.show();
         flashSHHH();
+        delay(100);
         strip.clear();
         strip.show();
-        delay(200);
+        delay(100);
       }
       resetScreen();
     }
@@ -328,6 +316,7 @@ void setLedStick() {  //Activating the LEDs dependent on the loudness which is d
 
 void reconnect() {  // method is taken fron the MQTT workshop
   // Loop until we're reconnected
+  setupWIFI();
   while (!client.connected()) {
     Serial.println("Attempting MQTT connection...");
     // Create a random client ID
@@ -339,9 +328,6 @@ void reconnect() {  // method is taken fron the MQTT workshop
       // ... and resubscribe
       client.subscribe(TOPIC_sub2);
       client.subscribe(TOPIC_sub1);
-      Serial.print("Subcribed to: ");
-      Serial.println(TOPIC_sub1);
-      Serial.println(TOPIC_sub2);
       // Once connected, publish an announcement...
     } else {
       Serial.print("failed, rc=");
@@ -358,19 +344,13 @@ void reconnect() {  // method is taken fron the MQTT workshop
 //This function is called when a message over mqtt is recieved
 void callback(char* topic, byte* payload, unsigned int length) {
 
-  Serial.print("Message recieved on topic ");
-  Serial.println(topic);
-
   String message;
   for (int i = 0; i < length; i++) {  //iterates through the payload converting it from byte to a string
     message += (char)payload[i];
   }
-  Serial.print("Message payload: ");
-  Serial.println(message);
 
   if (strcmp(topic, "shusher/threshold") == 0) {  //checks if the topic is "shusher/threshold"
     changeThreshold(message);                     // if it is, call the changeThreshold cunction
-    Serial.print(message);
   } else if (strstr(topic, "shusher/lights/") != NULL) {  // check if the topic contains "shusher/lights/". strstr checks if the given string is a substring of the topic.
     char* section = topic + strlen("shusher/colors/");    // extracts the section from the topic string by moving the pointer to the first letter of "section"
     changeLightsTheme(message, section);                  //call the changeLightsTheme with the message payload and section as arguments
@@ -382,10 +362,6 @@ void changeLightsTheme(String message, char* section) {
   char* endptr;                                               // lines 317,318, 310,309 is recomended by chatgpt, i think strtoul is a good function to use to convert a hexadecimal string becase of the error handling,
                                                               // strlen was a smart way to extract the section from the topic because the whole topic is not needed in the changeLightsTheme
   uint32_t hexValue = strtoul(message.c_str(), &endptr, 16);  // converts the message payload from a hexadecimal string to uint32_t to be able to set the lights with message
-  Serial.print("Converted value: ");
-  Serial.println(hexValue);
-
-  //Check for changing led strip section colors
   if (strcmp(section, "section1") == 0) {  //checks if section is "section1"
     ledStickColors[0] = hexValue;          // if it is, set the color of section 1 to the converted value
   } else if (strcmp(section, "section2") == 0) {
@@ -393,8 +369,8 @@ void changeLightsTheme(String message, char* section) {
   } else if (strcmp(section, "section3") == 0) {
     ledStickColors[2] = hexValue;
   }
-
-  //Check for changing thematic colors of GUI
+  
+  //Checks what theme it is set to
   if(strcmp(section, "theme") == 0){
     if(message == "defaultTheme"){
       thematicColors[0] = TFT_DARKGREEN;
@@ -408,9 +384,8 @@ void changeLightsTheme(String message, char* section) {
       thematicColors[0] = TFT_CYAN;
       thematicColors[1] = TFT_PINK;
       thematicColors[2] = TFT_YELLOW;
-    }
+    }resetScreen();
   }
-  
 }
 
 //this function hcanges the baseThreshold based on the message payload.
@@ -425,8 +400,6 @@ void changeThreshold(String message) {
     Serial.println("baseThreshold is now set to 49");
     baseThreshold = 49;  //if it does, change the baseThreshold to 56.
   }
-  Serial.println(message);
 }
-
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------

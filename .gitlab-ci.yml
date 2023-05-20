@@ -1,8 +1,12 @@
 image: maven:latest
 
+workflow:
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "push"'
+
 stages:
     - package
-    - deploy
+    - release
 
 package-job:
     stage: package
@@ -14,12 +18,17 @@ package-job:
         - "mvn -f shusherGUI clean package"
         - echo "Maven build finished"
 
-deploy-job:
-    stage: deploy
-    tags:
-        - deployment
-    
+release-job:
+    stage: release
+    rules:
+        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
     script:
-        - echo "Maven deployment started"
-        - "mvn clean deploy"
-        - echo "Maven deployed"
+        - echo "Running release job for shusherGUI"
+    release:
+        tag_name: 'v0.$CI_PIPELINE_IID'
+        description: 'v0.$CI_PIPELINE_IID'
+        ref: '$CI_COMMIT_SHA'
+    artifacts:
+        paths:
+            - shusherGUI/shusherGUI-1.0.jar 
