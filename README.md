@@ -47,6 +47,7 @@ The integration of the WIO Terminal and sensors into the system involves the use
 
 The application itself is built using JavaFX, a framework for creating desktop and mobile applications with a rich user interface. Leveraging capabilities and advantages of scene-builder within JavaFX, we have developed a user-friendly and visually appealing interface for the Shusher application. The software architecture is shown in the class diagram below. This diagram offers a detailed view of the software components, their relationships, and the overall structure of the application.
 ![Image Description](https://previews.dropbox.com/p/thumb/AB6X300xSMyMcBhu0Q5H7hSeeIp3kbdGUZfjEa-eQh-_ABfVwdsdEfE0JBmMQR24oLQiHcylk1eUTtrQYRaQL72_NBM56KkqNboUtTQMcMQAxLQMOpJFytyITMA8v_b2usGfcsC3YAkTTTg6YJdciSqkaPNPh2X5dzwWCEN41FVzVHud-Td_JNq4RWBbZ49ARAiy8-wDUsN_27nxjPlvWXj7Vu-VBBxpXPXgLxbZbppqSPlo6v7H9K3KSmeTYKxJ0APB4FWKqkIW472XoI7-M3V0t37rzKwvm5iMTuFBfZMbRIB1OMa6aTpE1ejM0gAjrIxf2_axWWgq_pbHdG-eMbnm-mQXs8RZaKAUKNaXSEuuzf15YIk-szxzCdN7uvG6onNzQcmU6XT3Hk4GuKT2vrje/p.png)
+There were issues when exporting the application to an executable jar file, therefore a 'FakeMain' class was created. The 'FakeMain' class brings no functionality to the system design. It is only used to call the 'MainApplication' class. By having a 'FakeMain', we were able to export the application as an executable jar file and make the program customer friendly.
 
 ## Visuals
 
