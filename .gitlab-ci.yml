@@ -1,43 +1,19 @@
 image: maven:latest
 
+workflow:
+    rules:
+        - if: '$CI_PIPELINE_SOURCE == "push"'
+
 stages:
-    - build
-    - test
     - package
-    - deploy
-
-build-job:
-    stage: build
-    tags:
-        - docker
-    
-    script:
-        - echo "Maven compile started"
-        - "mvn compile"
-
-test-job:
-    stage: test
-    tags:
-        - docker
-
-    script:
-        - echo "Maven test started"
-        - "mvn test"
 
 package-job:
     stage: package
-    tags:
+    tags: 
         - docker
-
+    
     script:
-        - echo "Maven packaging started"
-        - "mvn package"
-
-deploy-job: 
-    stage: deploy
-    tags:
-        - docker
-
-    script:
-        - echo "Maven deploy started"
+        - echo "Maven build started"
+        - "mvn -f shusherGUI clean package"
+        - echo "Maven build finished"
 
