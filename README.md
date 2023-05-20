@@ -12,7 +12,7 @@
 8. [License](#license)
 9. [Support](#support)
 10. [Roadmap](#roadmap)
-11. [Authors and acknowledgment](authors-and-acknowledgment) 
+11. [Authors and acknowledgment](#authors-and-acknowledgment) 
 
 ---
 
