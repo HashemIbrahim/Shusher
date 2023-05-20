@@ -5,7 +5,7 @@
 1. [Shusher Showcase Video](#shusher-showcase-video)
 2. [Introduction](#introduction)
 3. [Description](#description)
-4. [Hardware & Software Architecture](#hardware-&-software-architecture)
+4. [Hardware and Software Architecture](#hardware-and-software-architecture)
 5. [Visuals](#visuals)
 6. [Installation](#installation)
 7. [Purpose](#purpose)
@@ -35,7 +35,7 @@ The **Shusher** is a device that visually shows a User when they are crossing a 
 
 ---
 
-## Hardware & Software Architecture
+## Hardware and Software Architecture
 
 ---
 
