@@ -6,7 +6,6 @@ workflow:
 
 stages:
     - package
-    - release
 
 package-job:
     stage: package
@@ -18,17 +17,3 @@ package-job:
         - "mvn -f shusherGUI clean package"
         - echo "Maven build finished"
 
-release-job:
-    stage: release
-    rules:
-        - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-
-    script:
-        - echo "Running release job for shusherGUI"
-    release:
-        tag_name: 'v0.$CI_PIPELINE_IID'
-        description: 'v0.$CI_PIPELINE_IID'
-        ref: '$CI_COMMIT_SHA'
-    artifacts:
-        paths:
-            - shusherGUI/shusherGUI-1.0.jar 
