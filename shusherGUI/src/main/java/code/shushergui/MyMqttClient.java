@@ -5,22 +5,16 @@ import org.eclipse.paho.client.mqttv3.*;        //mqtt library
 public class MyMqttClient {
 
     public final MqttClient mqttClient;
-    private String topic;
 
     public MyMqttClient(String broker, String clientID) throws MqttException{
         this.mqttClient = new MqttClient(broker, clientID);
     }
-
 
     public void connect() throws MqttException {
         MqttConnectOptions options = new MqttConnectOptions();
         // Broker should discard any previous session state associated with this client and start a new one.
         options.setCleanSession(true);
         mqttClient.connect(options);
-    }
-
-    public void disconnect()throws MqttException {
-        mqttClient.disconnect();
     }
 
     // Publish function, takes topic and message as argument. Publishes a payload that is converted to a byte array

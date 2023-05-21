@@ -9,10 +9,10 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282828;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.HomepageController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="500.0" style="-fx-background-color: #282828;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="code.shushergui.HomepageController">
     <children>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="35.0" layoutX="100.0" layoutY="44.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="400.0" />
-        <HBox alignment="TOP_CENTER" layoutX="100.0" layoutY="121.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="15.0" prefWidth="400.0">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="35.0" layoutX="50.0" layoutY="33.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="400.0" />
+        <HBox alignment="TOP_CENTER" layoutX="50.0" layoutY="81.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" nodeOrientation="LEFT_TO_RIGHT" prefHeight="15.0" prefWidth="400.0">
             <children>
                 <StackPane fx:id="light1" prefHeight="150.0" prefWidth="200.0" />
                 <StackPane fx:id="light2" prefHeight="150.0" prefWidth="200.0" />
@@ -29,42 +29,52 @@
                 <Insets />
             </opaqueInsets>
         </HBox>
-        <Label layoutX="253.0" layoutY="50.0" text="Shusher" textFill="PALEGREEN">
+        <Label layoutX="203.0" layoutY="39.0" text="Shusher" textFill="PALEGREEN">
             <font>
                 <Font name="OCR A Extended" size="22.0" />
             </font>
         </Label>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="100.0" layoutY="175.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="249.0" layoutY="175.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
-        <Label layoutX="120.0" layoutY="183.0" text="Threshold" textFill="#cf9fff">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="50.0" layoutY="109.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#202020" height="148.0" layoutX="187.0" layoutY="109.0" stroke="BLACK" strokeLineCap="ROUND" strokeType="INSIDE" strokeWidth="0.0" width="126.0" />
+        <Label layoutX="70.0" layoutY="120.0" text="Threshold" textFill="#cf9fff">
             <font>
                 <Font name="OCR A Extended" size="16.0" />
             </font>
         </Label>
-        <Label layoutX="273.0" layoutY="183.0" text="Distance" textFill="#cf9fff">
+        <Label layoutX="211.0" layoutY="120.0" text="Distance" textFill="#cf9fff">
             <font>
                 <Font name="OCR A Extended" size="16.0" />
             </font>
         </Label>
-        <Label layoutX="120.0" layoutY="297.0" prefHeight="17.0" prefWidth="148.0" text="Times exceeded:" textFill="#cf9fff">
+        <Label layoutX="53.0" layoutY="232.0" prefHeight="17.0" prefWidth="148.0" text="Times exceeded:" textFill="#cf9fff">
             <font>
-                <Font name="OCR A Extended" size="8.0" />
+                <Font name="OCR A Extended" size="10.0" />
             </font>
         </Label>
-        <Label layoutX="268.0" layoutY="297.0" prefHeight="17.0" prefWidth="148.0" text="Sensitivity:" textFill="#cf9fff">
-            <font>
-                <Font name="OCR A Extended" size="8.0" />
-            </font>
-        </Label>
-      <Button fx:id="muteButton" layoutX="399.0" layoutY="175.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="101.0" style="-fx-border-color: #CF9FFF; -fx-background-color: #202020;" text="Mute" textFill="PALEGREEN">
+      <Button fx:id="settingsButton" layoutX="325.0" layoutY="207.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="125.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Settings" textFill="PALEGREEN">
          <font>
             <Font name="OCR A Extended" size="16.0" />
          </font>
       </Button>
-      <Button layoutX="399.0" layoutY="272.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="50.0" prefWidth="101.0" style="-fx-background-color: #202020; -fx-border-color: #CF9FFF;" text="Settings" textFill="PALEGREEN">
+      <Button fx:id="exitButton" layoutX="325.0" layoutY="112.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#exitApp" prefHeight="50.0" prefWidth="125.0" style="-fx-border-color: #CF9FFF; -fx-background-color: #202020;" text="Exit" textFill="PALEGREEN">
          <font>
             <Font name="OCR A Extended" size="16.0" />
          </font>
       </Button>
+      <Label fx:id="thresholdLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="70.0" layoutY="170.0" maxWidth="87.0" minWidth="87.0" text="Low" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
+         <font>
+            <Font name="OCR A Extended" size="24.0" />
+         </font>
+      </Label>
+      <Label fx:id="counterLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="113.0" layoutY="233.0" maxWidth="87.0" minWidth="87.0" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
+         <font>
+            <Font name="OCR A Extended" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="distanceLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="207.0" layoutY="170.0" maxWidth="87.0" minWidth="87.0" textAlignment="CENTER" textFill="PALEGREEN" wrapText="true">
+         <font>
+            <Font name="OCR A Extended" size="24.0" />
+         </font>
+      </Label>
     </children>
 </Pane>
