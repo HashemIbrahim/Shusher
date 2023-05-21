@@ -162,15 +162,15 @@ shushercustomerservice@gmail.com
 ## Authors and acknowledgment
 
 A standing ovation to the following board members who all contributed in their respective ways on every sprint delivery and the final product with special mentions to:
-- Mika Rannisto:
+- **Mika Rannisto:**
   For designing and implementing the Wio gui, setting up automated build and CI/CD. Helping with ultrasonic ranger code and refactoring. Doing crucial work on connecting sensors and merging files. User manual and ReadMe text contributions as well. 
-- Hashem Ibrahim:
+- **Hashem Ibrahim:**
   For implementing the functionality of inputting data from the wio mic and recording sound, converting it into usable values to display and be used around the code and implementing ultrasonic ranger functionality. Doing minor work on a wio gui MVP. Doing major work on backend structuring, debugging and modularisation.
-- Johan Engstrom:
+- **Johan Engstrom:**
   For implementing the displaying of the data using the LED strip and implementing mqtt into the Arduino code and making sure it publishes and subscribes values. Doing backend formatting. For working closely on connecting the Java gui to the Arduino code.
-- Ashor Abraham:
+- **Ashor Abraham:**
   For project management such as management of the readme, sprint deliveries, code review rules, and handling merge requests and code reviewing. 
-- Isaac Ternbom:
-  For being project manager and keeping the team on track. Doing extremely vital work on the whole front end and developing the Java gui and setting up mqtt. Cleaning up the repository and managing issue tracking.
-- Abdullahi Mahamed
+- **Isaac Lindegren Ternbom:**
+  For being project manager and keeping the team on track throughout the project. Doing extremely vital work on the whole front end and single handedly developing the JavaFX gui. Setting up mqtt and teaching the team how to use mqtt. Managing issue tracking and sprint planning. Created all diagrams and the installation guide. Contributed to wiki and readme documentation.
+- **Abdullahi Mahamed**
   For Initial work on the loudness sensor and automated build. Working on the wiki pages and formatting the home page.
