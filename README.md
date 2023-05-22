@@ -41,14 +41,14 @@ Welcome to the hardware and software architecture section of the README. In this
 ### System design
 The system diagram illustrates the connections and roles of the different parts of the system. It provides a visual representation of how the hardware components interact with each other and the application to support the functionality of the Shusher system.
 
-![Image Description](Version1.0_System_Design.png)
+![Version1.0_System_Design](/uploads/3e37fdb9586235a94a55a3635aa7c8da/Version1.0_System_Design.png)
 
 ### Software Architecture
 The integration of the WIO Terminal and sensors into the system involves the use of the C programming language. By utilizing C, we have been able to establish seamless communication and data exchange between the WIO Terminal and the sensors, ensuring accurate and reliable readings. 
 
 The application itself is built using JavaFX, a framework for creating desktop and mobile applications with a rich user interface. Leveraging capabilities and advantages of scene-builder within JavaFX, we have developed a user-friendly and visually appealing interface for the Shusher application. The software architecture is shown in the class diagram below. This diagram offers a detailed view of the software components, their relationships, and the overall structure of the application.
 
-![Image Description](shusherGUIClassDiagram.png)
+![shusherGUIClassDiagram](/uploads/caa36fea0cab9888f756abc347f82e33/shusherGUIClassDiagram.png)
 There were issues when exporting the application to an executable jar file, therefore a 'FakeMain' class was created. The 'FakeMain' class brings no functionality to the system design. It is only used to call the 'MainApplication' class. By having a 'FakeMain', we were able to export the application as an executable jar file and make the program customer friendly.
 
 ## Visuals
